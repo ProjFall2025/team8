@@ -28,3 +28,29 @@ It also includes; communication, maintenance requests, lease tracking and collec
 - **Demographics and Interests**: Multi-properties companies; Multi- Properties companies are interested in knowledge and systemic growth.
 - **Needs**: The properties, financial, and occupancy data must be backed up. 
 - **Support**: Administration, fact-live and intelligent insights.
+
+---
+
+## 3)	Functionalities 
+
+### All features are divided into an EPIC 
+- **Tenant Portal**: Tenants use the portal to pay rent and other fees as well as access lease information. 
+- **Landlord Dashboard**: The landlords upkeep, generate income and accept applications.
+- **Maintenance Requests**: Complaints are made by tenants, contractors are employed and work monitored by landlords. 
+- **Automated Bills**: Late fees and reminders, monthly bills. 
+- **History**: Tenant payments and History of tenant property changes Logs of tenant history. 
+- **Smart Lock**: Integration Digital simulation of physical access control. 
+- **Storage of leasing documents**: Visibility to both the tenant and landlord on document entries. 
+
+---
+
+### Feature Alignment 
+- The functions are aligned with the mission to reduce manual work, open and efficient communication . 
+- An online tenant gateway will allow tenant to pay rent and access lease. 
+- Leases and property/income can be managed using a consolidated dashboard. 
+- Online billed amount will be billed after every month regardless of whether the tenant paid or not. 
+- Secure the privacy of tenants All tenant records are kept offsite and are available. 
+- Each unit is presented in photographs that make units and listings more visible. 
+- Both upload and download lease and lease related documents.  
+
+
