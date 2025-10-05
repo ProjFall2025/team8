@@ -18,4 +18,70 @@ Team Members
 | Lease Document Storage     | Lease files, visibility settings          | Tenants, Properties, Users                     |
 | Photo Listings             | Unit images, descriptions                 | Properties                                     |
 
+## Entities & Attributes
+# Users
+- user_id – INT, PK, AUTO_INCREMENT
+- name – VARCHAR(100), NOT NULL
+- email – VARCHAR(100), UNIQUE, NOT NULL
+- phone – VARCHAR(20)
+- role – ENUM('admin', 'tenant', 'manager')
+- created_at – TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
+# Properties
+
+- property_id – INT, PK, AUTO_INCREMENT
+- address – VARCHAR(255), NOT NULL
+- city – VARCHAR(100)
+- state – VARCHAR(50)
+- zip – VARCHAR(10)
+- rent_amount – DECIMAL(10,2)
+- status – ENUM('available', 'occupied')
+
+# Leases
+- lease_id – INT, PK, AUTO_INCREMENT
+- property_id – INT, FK → Properties(property_id)
+- user_id – INT, FK → Users(user_id)
+- start_date – DATE
+- end_date – DATE
+- lease_file_url – TEXT
+  
+# Payments
+- payment_id – INT, PK, AUTO_INCREMENT
+- user_id – INT, FK → Users(user_id)
+- lease_id – INT, FK → Leases(lease_id)
+- amount – DECIMAL(10,2)
+- paid_date – DATE
+- status – ENUM('pending', 'completed')
+
+# MaintenanceRequests
+- request_id – INT, PK, AUTO_INCREMENT
+- property_id – INT, FK → Properties(property_id)
+- user_id – INT, FK → Users(user_id)
+- description – TEXT
+- status – ENUM('open', 'in_progress', 'closed')
+- created_at – TIMESTAMP
+  
+# Documents
+- document_id – INT, PK, AUTO_INCREMENT
+- lease_id – INT, FK → Leases(lease_id)
+- uploaded_by – INT, FK → Users(user_id)
+- file_url – TEXT
+  
+# TenantHistory
+- history_id – INT, PK, AUTO_INCREMENT
+- lease_id – INT, FK → Leases(lease_id)
+- user_id – INT, FK → Users(user_id)
+- activity_type – ENUM('payment', 'maintenance', 'lease_change')
+  
+# SmartLocks
+- lock_id – INT, PK, AUTO_INCREMENT
+- access_code – VARCHAR(50)
+- property_id – INT, FK → Properties(property_id)
+- status – ENUM('active', 'inactive')
+  
+# Photos
+- photo_id – INT, PK, AUTO_INCREMENT
+- property_id – INT, FK → Properties(property_id)
+- image_url – TEXT
+- caption – TEXT
+- uploaded_at – TIMESTAMP
