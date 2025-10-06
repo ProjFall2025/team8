@@ -187,3 +187,10 @@ CREATE TABLE SmartLocks (
  );
 
 
+## UML Diagram
+<img width="560" height="828" alt="ER" src="https://github.com/user-attachments/assets/b81654e8-b889-43dd-ac60-32a262b08d73" />
+
+
+## Brief Explanation of How Schema Supports Site Functionalities
+
+All common features of the Smart Property & Tenant Management System are backed by the database schema.For example, it supports secure user registration and access based on roles, recording leases and payments, storing documents and photographs, and processing maintenance requests and invoices. Entities interact with one another so as to ensure data integrity with improved query processes concerning dashboards, reminders, and auditlogs. The schema is evolutionary, with ablity to enhanced facility support like smart-lock integration, automated billing, etc.
