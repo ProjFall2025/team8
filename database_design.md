@@ -170,7 +170,8 @@ Team Members
 - activity_type – ENUM(payment, maintenance, lease_change)  
 
 ## ER Diagram
-<img width="899" height="1164" alt="image" src="https://github.com/user-attachments/assets/cc7bb554-4310-42df-8d90-826f54ee39e1" />
+<img width="1286" height="818" alt="Screenshot 2025-10-18 121537" src="https://github.com/user-attachments/assets/2f83dab8-c6ba-450a-a6f8-68aba2dfeca6" />
+
 
 
 ## Database Schema(DDL)
@@ -179,10 +180,24 @@ Team Members
  - name VARCHAR(100) NOT NULL,
  - email VARCHAR(100) UNIQUE NOT NULL,
  - phone VARCHAR(20),
- - role ENUM('admin', 'tenant', 'manager'),
+ - mobile_number VARCHAR(20),
+ - role ENUM('admin', 'tenant', 'landlord'),
  - created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
- 
+   
  );
+
+
+ CREATE TABLE UserIDs (
+ - id_id INT PRIMARY KEY AUTO_INCREMENT,
+ - user_id INT,
+ - id_type VARCHAR(50),
+ - id_number VARCHAR(100),
+ - id_photo_url TEXT,
+ - uploaded_at TIMESTAMP,
+ - FOREIGN KEY (user_id) REFERENCES Users(user_id)
+   
+ );
+
 
  CREATE TABLE Properties (
  - property_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -192,37 +207,61 @@ Team Members
  - zip VARCHAR(10),
  - rent_amount DECIMAL(10,2),
  - status ENUM('available', 'occupied')
-   
+
  );
 
  CREATE TABLE Leases (
  - lease_id INT PRIMARY KEY AUTO_INCREMENT,
- - property_id INT NOT NULL,
- - user_id INT NOT NULL,
+ - property_id INT,
+ - user_id INT,
  - start_date DATE,
  - end_date DATE,
  - lease_file_url TEXT,
+ - renewal_requested BOOLEAN DEFAULT FALSE,
+ - renewal_date DATE,
  - FOREIGN KEY (property_id) REFERENCES Properties(property_id),
  - FOREIGN KEY (user_id) REFERENCES Users(user_id)
 
  );
 
- CREATE TABLE Payments (
+CREATE TABLE LeaseTenants (
+ - lease_id INT,
+ - user_id INT,
+ - PRIMARY KEY (lease_id, user_id),
+ - FOREIGN KEY (lease_id) REFERENCES Leases(lease_id),
+ - FOREIGN KEY (user_id) REFERENCES Users(user_id)
+
+ );
+
+CREATE TABLE Payments (
  - payment_id INT PRIMARY KEY AUTO_INCREMENT,
- - user_id INT NOT NULL,
- - lease_id INT NOT NULL,
+ - user_id INT,
+ - lease_id INT,
  - amount DECIMAL(10,2),
  - paid_date DATE,
  - status ENUM('pending', 'completed'),
+ - payment_type ENUM('regular', 'advance'),
+ - payment_for_month DATE,
  - FOREIGN KEY (user_id) REFERENCES Users(user_id),
  - FOREIGN KEY (lease_id) REFERENCES Leases(lease_id)
 
  );
 
-CREATE TABLE MaintenanceRequests (
+CREATE TABLE PaymentHistory (
+ - history_id INT PRIMARY KEY AUTO_INCREMENT,
+ - payment_id INT,
+ - status ENUM('completed', 'late', 'failed'),
+ - late_fee_applied BOOLEAN DEFAULT FALSE,
+ - note TEXT,
+ - updated_at TIMESTAMP,
+ - FOREIGN KEY (payment_id) REFERENCES Payments(payment_id)
+
+ );
+
+CREATE TABLE  MaintenanceRequests (
  - request_id INT PRIMARY KEY AUTO_INCREMENT,
- - property_id INT NOT NULL,
- - user_id INT NOT NULL,
+ - property_id INT,
+ - user_id INT,
  - description TEXT,
  - status ENUM('open', 'in_progress', 'closed'),
  - created_at TIMESTAMP,
@@ -231,42 +270,81 @@ CREATE TABLE MaintenanceRequests (
 
  );
 
-CREATE TABLE Documents (
+ CREATE TABLE Documents (
  - document_id INT PRIMARY KEY AUTO_INCREMENT,
- - lease_id INT NOT NULL,
- - uploaded_by INT NOT NULL,
+ - lease_id INT,
+ - uploaded_by INT,
  - file_url TEXT,
  - FOREIGN KEY (lease_id) REFERENCES Leases(lease_id),
  - FOREIGN KEY (uploaded_by) REFERENCES Users(user_id)
 
  );
 
-CREATE TABLE TenantHistory (
- - history_id INT PRIMARY KEY AUTO_INCREMENT,
- - lease_id INT NOT NULL,
- - user_id INT NOT NULL,
- - activity_type ENUM('payment', 'maintenance', 'lease_change'),
+ CREATE TABLE LeaseArchive (
+ - archive_id INT PRIMARY KEY AUTO_INCREMENT,
+ - lease_id INT,
+ - user_id INT,
+ - lease_pdf_url TEXT,
+ - archived_at TIMESTAMP,
  - FOREIGN KEY (lease_id) REFERENCES Leases(lease_id),
  - FOREIGN KEY (user_id) REFERENCES Users(user_id)
-
+    
  );
 
-CREATE TABLE SmartLocks (
- - lock_id INT PRIMARY KEY AUTO_INCREMENT,
- - access_code VARCHAR(50),
- - property_id INT NOT NULL,
- - status ENUM('active', 'inactive'),
- - FOREIGN KEY (property_id) REFERENCES Properties(property_id)
-
- );
-
- CREATE TABLE Photos (
+ 
+CREATE TABLE Photos (
  - photo_id INT PRIMARY KEY AUTO_INCREMENT,
- - property_id INT NOT NULL,
+ - property_id INT,
  - image_url TEXT,
  - caption TEXT,
  - uploaded_at TIMESTAMP,
  - FOREIGN KEY (property_id) REFERENCES Properties(property_id)
+ 
+ );
+
+ CREATE TABLE LeasePhotos (
+ - photo_id INT PRIMARY KEY AUTO_INCREMENT,
+ - lease_id INT,
+ - photo_url TEXT,
+ - uploaded_by INT,
+ - is_visible_to_tenant BOOLEAN DEFAULT FALSE,
+ - uploaded_at TIMESTAMP,
+ - FOREIGN KEY (lease_id) REFERENCES Leases(lease_id),
+ - FOREIGN KEY (uploaded_by) REFERENCES Users(user_id)
+ 
+ );
+
+CREATE TABLE SmartPasscodes (
+ - passcode_id INT PRIMARY KEY AUTO_INCREMENT,
+ - lease_id INT,
+ - user_id INT,
+ - passcode CHAR(4),
+ - created_at TIMESTAMP,
+ - expires_at DATETIME,
+ - is_active BOOLEAN DEFAULT TRUE,
+ - FOREIGN KEY (lease_id) REFERENCES Leases(lease_id),
+ - FOREIGN KEY (user_id) REFERENCES Users(user_id)
+ 
+ );
+
+ CREATE TABLE UserReminders (
+ - reminder_id INT PRIMARY KEY AUTO_INCREMENT,
+ - user_id INT,
+ - type ENUM('lease', 'payment', 'late_fee'),
+ - message TEXT,
+ - remind_at DATETIME,
+ - is_sent BOOLEAN DEFAULT FALSE,
+ - FOREIGN KEY (user_id) REFERENCES Users(user_id)
+ 
+ );
+
+ CREATE TABLE TenantHistory (
+ - history_id INT PRIMARY KEY AUTO_INCREMENT,
+ - lease_id INT,
+ - user_id INT,
+ - activity_type ENUM('payment', 'maintenance', 'lease_change'),
+ - FOREIGN KEY (lease_id) REFERENCES Leases(lease_id),
+ - FOREIGN KEY (user_id) REFERENCES Users(user_id)
 
  );
 
