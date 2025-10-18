@@ -7,87 +7,171 @@ Team Members
 
 ## Feature Mapping Table
 
-| **Feature**                | **Required Data**                         | **Entities Involved**                          |
-|----------------------------|-------------------------------------------|------------------------------------------------|
-| Tenant Portal              | Rent payments, lease info                 | Users, Tenants, Payments, Properties           |
-| Landlord Dashboard         | Property listings, applications, income  | Users, Properties, Tenants                     |
-| Maintenance Requests       | Complaint details, status, contractor info| Tenants, MaintenanceRequests, Properties       |
-| Automated Bills            | Monthly rent, late fees, reminders        | Payments, Tenants                              |
-| History Logs               | Payment history, lease changes            | Tenants, Payments, Properties                  |
-| Smart Lock Access          | Access control, unit ID                   | Properties, Users                              |
-| Lease Document Storage     | Lease files, visibility settings          | Tenants, Properties, Users                     |
-| Photo Listings             | Unit images, descriptions                 | Properties                                     |
+| Feature                     | Required Data                                           | Entities Involved                                               |
+|----------------------------|---------------------------------------------------------|------------------------------------------------------------------|
+| Tenant Portal              | Lease details, rent payments, reminders, smart lock access | Users, LeaseTenants, Leases, Payments, SmartPasscodes, UserReminders |
+| Landlord Dashboard         | Property listings, lease photos, income summary, tenant info | Users, Properties, Leases, Payments, LeasePhotos, IncomeView     |
+| Maintenance Requests       | Complaint details, status, timestamps, resolution history | Users, MaintenanceRequests, Properties, TenantHistory            |
+| Automated Billing System   | Monthly rent, late fees, payment reminders               | Payments, UserReminders, PaymentHistory                          |
+| History Logs & Audit Trail | Payment history, lease changes, passcode resets, maintenance | TenantHistory, PaymentHistory, LeaseArchive, SmartPasscodes      |
+| Smart Lock Access          | 4-digit passcode, reset history, lease linkage           | SmartPasscodes, Leases, Users                                    |
+| Lease Document Storage     | Lease files, archive access, visibility settings         | Documents, LeaseArchive, Users                                   |
+| Photo Listings             | Unit images, captions, visibility to tenants             | Photos, LeasePhotos, Properties                                  |
+| Valid ID Verification      | ID type, number, photo, upload timestamp                 | UserIDs, Users                                                   |
+| Multi-Tenant Lease Support | Shared lease access, payment split, roommate management  | LeaseTenants, Leases, Users                                      |
+| Advance & Renewal Payments | Future rent payments, renewal requests, lease extension  | Payments, Leases                                                 |
+| Landlord Income View       | Total earnings per unit/lease, monthly/yearly breakdown  | Payments, Leases, Properties (via IncomeView SQL View)           |
+| Forgot Password Support    | Email, mobile number, ID verification                    | Users, UserIDs                                                   |
 
 ## Entities & Attributes
-# Users
-- user_id – INT, PK, AUTO_INCREMENT
-- name – VARCHAR(100), NOT NULL
-- email – VARCHAR(100), UNIQUE, NOT NULL
-- phone – VARCHAR(20)
-- role – ENUM('admin', 'tenant', 'manager')
-- created_at – TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+### 1. Users
+- user_id – INT, PK, AUTO_INCREMENT  
+- name – VARCHAR(100), NOT NULL  
+- email – VARCHAR(100), UNIQUE, NOT NULL  
+- phone – VARCHAR(20)  
+- mobile_number – VARCHAR(20)  
+- role – ENUM(admin, tenant, landlord)  
+- created_at – TIMESTAMP DEFAULT CURRENT_TIMESTAMP  
 
-# Properties
+---
 
-- property_id – INT, PK, AUTO_INCREMENT
-- address – VARCHAR(255), NOT NULL
-- city – VARCHAR(100)
-- state – VARCHAR(50)
-- zip – VARCHAR(10)
-- rent_amount – DECIMAL(10,2)
-- status – ENUM('available', 'occupied')
+### 2. Properties
+- property_id – INT, PK, AUTO_INCREMENT  
+- address – VARCHAR(255), NOT NULL  
+- city – VARCHAR(100)  
+- state – VARCHAR(50)  
+- zip – VARCHAR(10)  
+- rent_amount – DECIMAL(10,2)  
+- status – ENUM(available, occupied)  
 
-# Leases
-- lease_id – INT, PK, AUTO_INCREMENT
-- property_id – INT, FK → Properties(property_id)
-- user_id – INT, FK → Users(user_id)
-- start_date – DATE
-- end_date – DATE
-- lease_file_url – TEXT
-  
-# Payments
-- payment_id – INT, PK, AUTO_INCREMENT
-- user_id – INT, FK → Users(user_id)
-- lease_id – INT, FK → Leases(lease_id)
-- amount – DECIMAL(10,2)
-- paid_date – DATE
-- status – ENUM('pending', 'completed')
+---
 
-# MaintenanceRequests
-- request_id – INT, PK, AUTO_INCREMENT
-- property_id – INT, FK → Properties(property_id)
-- user_id – INT, FK → Users(user_id)
-- description – TEXT
-- status – ENUM('open', 'in_progress', 'closed')
-- created_at – TIMESTAMP
-  
-# Documents
-- document_id – INT, PK, AUTO_INCREMENT
-- lease_id – INT, FK → Leases(lease_id)
-- uploaded_by – INT, FK → Users(user_id)
-- file_url – TEXT
-  
-# TenantHistory
-- history_id – INT, PK, AUTO_INCREMENT
-- lease_id – INT, FK → Leases(lease_id)
-- user_id – INT, FK → Users(user_id)
-- activity_type – ENUM('payment', 'maintenance', 'lease_change')
-  
-# SmartLocks
-- lock_id – INT, PK, AUTO_INCREMENT
-- access_code – VARCHAR(50)
-- property_id – INT, FK → Properties(property_id)
-- status – ENUM('active', 'inactive')
-  
-# Photos
-- photo_id – INT, PK, AUTO_INCREMENT
-- property_id – INT, FK → Properties(property_id)
-- image_url – TEXT
-- caption – TEXT
-- uploaded_at – TIMESTAMP
+### 3. Leases
+- lease_id – INT, PK, AUTO_INCREMENT  
+- property_id – INT, FK → Properties(property_id)  
+- user_id – INT, FK → Users(user_id)  
+- start_date – DATE  
+- end_date – DATE  
+- lease_file_url – TEXT  
+- renewal_requested – BOOLEAN DEFAULT FALSE  
+- renewal_date – DATE  
+
+---
+
+### 4. LeaseTenants
+- lease_id – INT, FK → Leases(lease_id)  
+- user_id – INT, FK → Users(user_id)  
+
+---
+
+### 5. Payments
+- payment_id – INT, PK, AUTO_INCREMENT  
+- user_id – INT, FK → Users(user_id)  
+- lease_id – INT, FK → Leases(lease_id)  
+- amount – DECIMAL(10,2)  
+- paid_date – DATE  
+- status – ENUM(pending, completed)  
+- payment_type – ENUM(regular, advance)  
+- payment_for_month – DATE  
+
+---
+
+### 6. PaymentHistory
+- history_id – INT, PK, AUTO_INCREMENT  
+- payment_id – INT, FK → Payments(payment_id)  
+- status – ENUM(completed, late, failed)  
+- late_fee_applied – BOOLEAN DEFAULT FALSE  
+- note – TEXT  
+- updated_at – TIMESTAMP  
+
+---
+
+### 7. MaintenanceRequests
+- request_id – INT, PK, AUTO_INCREMENT  
+- property_id – INT, FK → Properties(property_id)  
+- user_id – INT, FK → Users(user_id)  
+- description – TEXT  
+- status – ENUM(open, in_progress, closed)  
+- created_at – TIMESTAMP  
+
+---
+
+### 8. Documents
+- document_id – INT, PK, AUTO_INCREMENT  
+- lease_id – INT, FK → Leases(lease_id)  
+- uploaded_by – INT, FK → Users(user_id)  
+- file_url – TEXT  
+
+---
+
+### 9. LeaseArchive
+- archive_id – INT, PK, AUTO_INCREMENT  
+- lease_id – INT, FK → Leases(lease_id)  
+- user_id – INT, FK → Users(user_id)  
+- lease_pdf_url – TEXT  
+- archived_at – TIMESTAMP  
+
+---
+
+### 10. Photos
+- photo_id – INT, PK, AUTO_INCREMENT  
+- property_id – INT, FK → Properties(property_id)  
+- image_url – TEXT  
+- caption – TEXT  
+- uploaded_at – TIMESTAMP  
+
+---
+
+### 11. LeasePhotos
+- photo_id – INT, PK, AUTO_INCREMENT  
+- lease_id – INT, FK → Leases(lease_id)  
+- photo_url – TEXT  
+- uploaded_by – INT, FK → Users(user_id)  
+- is_visible_to_tenant – BOOLEAN DEFAULT FALSE  
+- uploaded_at – TIMESTAMP  
+
+---
+
+### 12. SmartPasscodes
+- passcode_id – INT, PK, AUTO_INCREMENT  
+- lease_id – INT, FK → Leases(lease_id)  
+- user_id – INT, FK → Users(user_id)  
+- passcode – CHAR(4)  
+- created_at – TIMESTAMP  
+- expires_at – DATETIME  
+- is_active – BOOLEAN DEFAULT TRUE  
+
+---
+
+### 13. UserReminders
+- reminder_id – INT, PK, AUTO_INCREMENT  
+- user_id – INT, FK → Users(user_id)  
+- type – ENUM(lease, payment, late_fee)  
+- message – TEXT  
+- remind_at – DATETIME  
+- is_sent – BOOLEAN DEFAULT FALSE  
+
+---
+
+### 14. UserIDs
+- id_id – INT, PK, AUTO_INCREMENT  
+- user_id – INT, FK → Users(user_id)  
+- id_type – VARCHAR(50)  
+- id_number – VARCHAR(100)  
+- id_photo_url – TEXT  
+- uploaded_at – TIMESTAMP  
+
+---
+
+### 15. TenantHistory
+- history_id – INT, PK, AUTO_INCREMENT  
+- lease_id – INT, FK → Leases(lease_id)  
+- user_id – INT, FK → Users(user_id)  
+- activity_type – ENUM(payment, maintenance, lease_change)  
 
 ## ER Diagram
-<img width="560" height="828" alt="ER" src="https://github.com/user-attachments/assets/295782a0-5d4a-4788-b5bd-f6017c7f5a17" />
+<img width="899" height="1164" alt="image" src="https://github.com/user-attachments/assets/cc7bb554-4310-42df-8d90-826f54ee39e1" />
+
 
 ## Database Schema(DDL)
  CREATE TABLE Users (
