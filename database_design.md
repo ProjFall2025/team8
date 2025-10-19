@@ -170,7 +170,8 @@ Team Members
 - activity_type – ENUM(payment, maintenance, lease_change)  
 
 ## ER Diagram
-<img width="1286" height="818" alt="Screenshot 2025-10-18 121537" src="https://github.com/user-attachments/assets/2f83dab8-c6ba-450a-a6f8-68aba2dfeca6" />
+<img width="304" height="385" alt="image" src="https://github.com/user-attachments/assets/46fa18a5-ef97-453b-8e2e-38a4477c3c55" />
+
 
 
 
