@@ -104,6 +104,101 @@
 - System Architecture Diagram → React ↔ Node.js API ↔ Database ↔ Third-Party APIs.
 
   <img width="647" height="701" alt="Screenshot 2025-10-20 140614" src="https://github.com/user-attachments/assets/42572184-d2e9-4961-8043-6e72f19f9a04" />
+  
+---
+
+## 5.Core REST API Endpoints :
+
+### 1. Login :
+  - **Endpoint:** POST /api/login
+  - **Roles:** All users (Admin, Landlord, Tenant)
+  - **Request:**
+    ```json
+    { "email": "user@example.com", "password": "mypassword" }
+  - **Response:**
+    ```json
+     { "token": "jwt_token_here", "role": "Tenant" }
+
+### 2. Get Users :
+  - **Endpoint:** GET /api/users
+  - **Roles:** Admin only
+  - **Response:**
+    ```json
+    [
+       { "id": 1, "name": "Alice", "role": "Admin" },
+       { "id": 2, "name": "Bob", "role": "Landlord" }
+    ]
+
+### 3. Add Property : 
+  - **Endpoint:** POST /api/properties
+  - **Roles:** Admin, Landlord
+  - **Request:**
+    ```json
+    {
+      "title": "Studio Apartment",
+      "location": "Parsippany, NJ",
+      "rent": 950,
+      "landlordId": 2
+    }
+  - **Response:**
+    ```json
+    { "id": 101, "message": "Property created successfully" }
+
+### 4. Get Lease by Tenant : 
+  - **Endpoint:** GET /api/leases/:tenantId
+  - **Roles:** Tenant (own lease), Landlord (own property), Admin
+  - **Response:**
+    ```json
+    {
+      "leaseId": 55,
+      "propertyId": 101,
+      "tenantId": 3,
+      "startDate": "2025-10-01",
+      "endDate": "2026-09-30",
+      "monthlyRent": 950
+    }
+
+### 5. Make Payment : 
+  - **Endpoint:** POST /api/payments
+  - **Roles:** Tenant only
+  - **Request:**
+    ```json
+    {
+      "tenantId": 3,
+      "leaseId": 55,
+      "amount": 950,
+      "method": "card"
+    }
+  - **Response:**
+    ```json
+    { "paymentId": 88, "status": "Success", "timestamp": "2025-10-19T03:10:00Z" }
+
+### 6. Submit Maintenance Request : 
+  - **Endpoint:** POST /api/maintenance-requests
+  - **Roles:** Tenant only
+  - **Request:**
+    ```json
+    {
+      "tenantId": 3,
+      "propertyId": 101,
+      "description": "AC not working"
+    }
+  - **Response:**
+    ```json
+    { "requestId": 42, "status": "Pending" }
+
+## 6. Security & Performance Considerations
+
+### Security Measures :
+1.	Password hashing using bcrypt.
+2.	Input validation and sanitization to prevent SQL injection and XSS.
+3.	HTTPS for secure client-server communication.
+   
+### Performance Measures :
+1.	Database indexing on frequently queried fields.
+2.	API pagination and caching of frequently accessed data.
+
+
 
   
 
