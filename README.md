@@ -5,6 +5,65 @@ i)	Vishal Nalinbhai Patel
 ii)	Het BhavinKumar Patel   
 iii)	Harsh Manishkumar Rana 
   ---
+
+## 🚀 Project Overview (Part 4: Implementation & Prototype)
+
+- This is a full-stack web application built with React, Node.js, and MySQL. It supports role-based access for tenants, landlords, and admins, and includes features like property management, maintenance requests, lease tracking, and rent payments. A third-party API ,Stripe is integrated to enhance functionality.
+
+### 📁 Repository Structure
+- /frontend   → React app
+- /backend    → Node.js API
+- /database   → SQL scripts (schema + seed data)
+
+
+### 🔐 Authentication & Roles
+- JWT-based login and registration  
+- Roles: Admin, Registered User, Guest  
+- Role-based access enforced on protected routes  
+
+### 🌐 API Endpoints (Back-End Implemented)
+
+
+| Method | Endpoint                | Description                        |
+|--------|-------------------------|------------------------------------|
+| POST   | /api/auth/login         | Login user                         |
+| POST   | /api/auth/register      | Register new user                  |
+| GET    | /api/properties         | Get all properties (auth required) |
+| GET    | /api/properties/:id     | Get property by ID                 |
+| POST   | /api/properties         | Create property (Admin only)       |
+| PUT    | /api/properties/:id     | Update property (Admin only)       |
+| DELETE | /api/properties/:id     | Delete property (Admin only)       |
+
+### 💳 Third-Party API Integration
+- Stripe API integrated for secure online rent payments  
+- Tenants can pay rent via Stripe checkout  
+- Payment status and transaction history stored in backend  
+
+### 🖼️ Screenshots (check screenshots folder)
+- Login and registration flow  
+- Role-based dashboard views  
+- Property list fetched from backend  
+- Stripe payment integration  
+- Admin-only actions (create/update/delete)  
+
+### 🧾 Setup Instructions
+#### Backend
+- cd backend
+- npm install
+- cp .env.example .env
+- npm run dev
+
+#### Frontend
+- cd frontend
+- npm install
+- npm start
+
+#### Database
+- mysql -u root -p < database/schema.sql
+- mysql -u root -p < database/seed_data.sql
+
+
+  
 ### 1)	Conceptualization of Website 
 ### Mission Statement: 
 This site was created to enable tenants and landlords of real estate to easily manage the tenancy and handling of real estate to the managers.
