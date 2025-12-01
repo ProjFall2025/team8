@@ -2,36 +2,39 @@ const db = require('../config/database');
 const bcrypt = require('bcrypt');
 
 const User = {
+  // Find user by email
   findByEmail: async (email) => {
     try {
-      const [results] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+      const [results] = await db.query(
+        'SELECT * FROM users WHERE email = ?',
+        [email]
+      );
       return results[0];
     } catch (err) {
       throw err;
     }
   },
 
+  // Find user by ID
   findById: async (id) => {
     try {
-      const [results] = await db.query('SELECT * FROM users WHERE user_id = ?', [id]);
+      const [results] = await db.query(
+        'SELECT * FROM users WHERE user_id = ?',
+        [id]
+      );
       return results[0];
     } catch (err) {
       throw err;
     }
   },
 
+  // Create new user with hashed password
   create: async ({ name, email, password, role }) => {
     try {
-<<<<<<< HEAD
-      const [result] = await db.query(
-        'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-        [name, email, password, role]
-=======
       const hashedPassword = await bcrypt.hash(password, 10);
       const [result] = await db.query(
         'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
         [name, email, hashedPassword, role]
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
       );
       return { user_id: result.insertId, name, email, role };
     } catch (err) {
@@ -39,12 +42,12 @@ const User = {
     }
   },
 
+  // Compare input password with stored hash
   comparePassword: (inputPassword, storedHash) => {
     return bcrypt.compare(inputPassword, storedHash);
-<<<<<<< HEAD
   },
 
-  // ✅ NEW: Store reset token and expiry
+  // ✅ Store reset token and expiry
   updateResetToken: async (id, token, expiry) => {
     try {
       await db.query(
@@ -56,7 +59,7 @@ const User = {
     }
   },
 
-  // ✅ NEW: Find user by reset token
+  // ✅ Find user by reset token
   findByResetToken: async (token) => {
     try {
       const [results] = await db.query(
@@ -69,7 +72,7 @@ const User = {
     }
   },
 
-  // ✅ NEW: Update password
+  // ✅ Update password
   updatePassword: async (id, hashedPassword) => {
     try {
       await db.query(
@@ -81,7 +84,7 @@ const User = {
     }
   },
 
-  // ✅ NEW: Clear reset token
+  // ✅ Clear reset token
   clearResetToken: async (id) => {
     try {
       await db.query(
@@ -91,8 +94,6 @@ const User = {
     } catch (err) {
       throw err;
     }
-=======
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
   }
 };
 
