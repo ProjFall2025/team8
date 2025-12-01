@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const fs = require('fs');
 const path = require('path');
 const Document = require('../models/Document');
@@ -11,14 +10,6 @@ const documentController = {
       const { id: user_id, role } = req.user;
 
       const docs = await Document.getByLease(lease_id, user_id, role);
-=======
-const Document = require('../models/Document');
-
-const documentController = {
-  getByLease: async (req, res) => {
-    try {
-      const docs = await Document.findByLease(req.params.lease_id);
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
       res.json(docs);
     } catch (error) {
       console.error('Get documents error:', error);
@@ -26,7 +17,6 @@ const documentController = {
     }
   },
 
-<<<<<<< HEAD
   // POST upload document
   upload: async (req, res) => {
     try {
@@ -94,16 +84,6 @@ const documentController = {
       console.error('Toggle visibility error:', error);
       res.status(500).json({ message: 'Server error' });
     }
-=======
-  upload: async (req, res) => {
-    try {
-      const docId = await Document.create(req.body);
-      res.status(201).json({ message: 'Document uploaded', document_id: docId });
-    } catch (error) {
-      console.error('Upload document error:', error);
-      res.status(500).json({ message: 'Server error' });
-    }
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
   }
 };
 
