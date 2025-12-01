@@ -1,23 +1,31 @@
-<<<<<<< HEAD
 const db = require('../config/database');
 
 const Property = {
+  // Get all properties
   getAll: async () => {
     const [rows] = await db.query('SELECT * FROM properties');
     return rows;
   },
 
+  // Get property by ID
   getById: async (id) => {
-    const [rows] = await db.query('SELECT * FROM properties WHERE property_id = ?', [id]);
+    const [rows] = await db.query(
+      'SELECT * FROM properties WHERE property_id = ?',
+      [id]
+    );
     return rows[0];
   },
 
+  // Get properties by user
   getByUser: async (user_id) => {
-    const [rows] = await db.query('SELECT * FROM properties WHERE user_id = ?', [user_id]);
+    const [rows] = await db.query(
+      'SELECT * FROM properties WHERE user_id = ?',
+      [user_id]
+    );
     return rows;
   },
 
-  // ✅ FIXED: Get properties owned by landlord safely
+  // ✅ Get properties owned by landlord safely
   getByLandlord: async (landlordId) => {
     const [rows] = await db.query(
       `
@@ -57,7 +65,7 @@ const Property = {
     return rows;
   },
 
-  // ✅ FIXED: Dashboard view with ownership flag
+  // ✅ Dashboard view with ownership flag
   getAllWithOwnershipFlag: async (landlordId) => {
     const [rows] = await db.query(
       `
@@ -99,6 +107,7 @@ const Property = {
     return rows;
   },
 
+  // Create new property
   create: async (data) => {
     const {
       address,
@@ -115,20 +124,32 @@ const Property = {
       [address, city, state, zip, rent_amount, status, user_id]
     );
 
-    const [newRow] = await db.query('SELECT * FROM properties WHERE property_id = ?', [result.insertId]);
+    const [newRow] = await db.query(
+      'SELECT * FROM properties WHERE property_id = ?',
+      [result.insertId]
+    );
     return newRow[0];
   },
 
+  // Update property
   update: async (id, data) => {
-    const [result] = await db.query('UPDATE properties SET ? WHERE property_id = ?', [data, id]);
+    const [result] = await db.query(
+      'UPDATE properties SET ? WHERE property_id = ?',
+      [data, id]
+    );
     return result.affectedRows;
   },
 
+  // Delete property
   delete: async (id) => {
-    const [result] = await db.query('DELETE FROM properties WHERE property_id = ?', [id]);
+    const [result] = await db.query(
+      'DELETE FROM properties WHERE property_id = ?',
+      [id]
+    );
     return result.affectedRows;
   },
 
+  // Count properties grouped by user
   countByUser: async () => {
     const [rows] = await db.query(
       'SELECT user_id, COUNT(*) AS property_count FROM properties GROUP BY user_id'
@@ -138,58 +159,3 @@ const Property = {
 };
 
 module.exports = Property;
-=======
-const Property = require('../models/Property');
-
-const propertyController = {
-  getAll: async (req, res) => {
-    try {
-      const properties = await Property.findAll();
-      res.status(200).json(properties);
-    } catch {
-      res.status(500).json({ error: 'Failed to fetch properties' });
-    }
-  },
-
-  getById: async (req, res) => {
-    try {
-      const property = await Property.findById(req.params.id);
-      if (!property) return res.status(404).json({ error: 'Property not found' });
-      res.status(200).json(property);
-    } catch {
-      res.status(500).json({ error: 'Failed to fetch property' });
-    }
-  },
-
-  create: async (req, res) => {
-    try {
-      const newProperty = await Property.create(req.body);
-      res.status(201).json(newProperty);
-    } catch {
-      res.status(500).json({ error: 'Failed to create property' });
-    }
-  },
-
-  update: async (req, res) => {
-    try {
-      const updated = await Property.update(req.params.id, req.body);
-      if (!updated) return res.status(404).json({ error: 'Property not found' });
-      res.status(200).json({ message: 'Property updated successfully' });
-    } catch {
-      res.status(500).json({ error: 'Failed to update property' });
-    }
-  },
-
-  delete: async (req, res) => {
-    try {
-      const deleted = await Property.delete(req.params.id);
-      if (!deleted) return res.status(404).json({ error: 'Property not found' });
-      res.status(200).json({ message: 'Property deleted successfully' });
-    } catch {
-      res.status(500).json({ error: 'Failed to delete property' });
-    }
-  }
-};
-
-module.exports = propertyController;
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
