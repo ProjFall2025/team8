@@ -1,0 +1,5 @@
+[33m9462278e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Resolved backend merge conflicts, updated package files, and removed old documentRoutes.js
+[33mffbdf1b2[m Cleaned TenantDashboard.jsx merge markers and finalized tenant dashboard with lease, payments, reminders, and passcodes
+[33m75b9d584[m Cleaned TenantsPage.js merge markers and finalized tenant management with search, view, edit, and delete
+[33md9563d4e[m Cleaned RoleProtectedRoute.js merge markers and finalized secure role-based route protection with token expiry check
+[33m148f2223[m Cleaned Register.js merge markers and finalized styled registration page with overlay and card

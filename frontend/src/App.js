@@ -57,7 +57,7 @@ function App() {
         <Route path="/payment-cancel" element={<PaymentCancel />} />
         <Route path="/payments" element={<PaymentPage />} />
         <Route path="/landlord/properties" element={<LandlordProperties />} />
-
+<Route path="/properties-page" element={<PropertiesPage />} />
         {/* Role-based dashboard redirect */}
         <Route path="/dashboard" element={<DashboardRedirect />} />
 

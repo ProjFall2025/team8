@@ -30,9 +30,16 @@ const AdminProperties = () => {
     setShowForm(false); // close modal after creation
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
+  try {
+    await axios.delete(`/api/properties/${id}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
     setProperties(prev => prev.filter(p => p.property_id !== id));
-  };
+  } catch (err) {
+    console.error('❌ Delete error:', err);
+  }
+};
 
   const handleUpdate = (updatedProp) => {
     setProperties(prev =>

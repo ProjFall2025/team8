@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import PropertyEditForm from './PropertyEditForm';
-
+import PropertyDeleteButton from './PropertyDeleteButton';
 const PropertyList = ({ properties, onDelete, onUpdate }) => {
   const [editingId, setEditingId] = useState(null);
 
@@ -45,8 +45,11 @@ const PropertyList = ({ properties, onDelete, onUpdate }) => {
                   <p style={propDetail}><strong>👤 Owner:</strong> User #{prop.user_id}</p>
                   <div style={buttonRow}>
                     <button style={editButton} onClick={() => setEditingId(prop.property_id)}>✏️ Edit</button>
-                    <button style={deleteButton} onClick={() => handleDelete(prop.property_id)}>🗑 Delete</button>
-                  </div>
+                <PropertyDeleteButton
+  propertyId={prop.property_id}
+  onDelete={handleDelete}
+/>
+  </div>
                 </>
               )}
             </div>
@@ -94,6 +97,5 @@ const propDetail = { marginBottom: '0.5rem', color: '#555' };
 
 const buttonRow = { display: 'flex', justifyContent: 'space-between', marginTop: '1rem' };
 const editButton = { padding: '0.5rem 1rem', backgroundColor: '#ffc107', border: 'none', borderRadius: '6px', cursor: 'pointer' };
-const deleteButton = { padding: '0.5rem 1rem', backgroundColor: '#dc3545', border: 'none', borderRadius: '6px', cursor: 'pointer', color: '#fff' };
 
 export default PropertyList;
