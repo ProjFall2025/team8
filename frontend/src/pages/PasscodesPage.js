@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SmartPasscodeForm from '../components/SmartPasscodeForm';
@@ -192,8 +191,3 @@ const PasscodesPage = () => {
 };
 
 export default PasscodesPage;
-=======
-export default function PasscodesPage() {
-  return <h2>🔐 Smart Passcodes Coming Soon</h2>;
-}
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
