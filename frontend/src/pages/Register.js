@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React from "react";
 import RegisterForm from "../components/RegisterForm";
 
@@ -71,14 +70,3 @@ const styles = {
 };
 
 export default Register;
-=======
-import RegisterForm from '../components/RegisterForm';
-
-export default function Register() {
-  return (
-    <div>
-      <RegisterForm />
-    </div>
-  );
-}
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
