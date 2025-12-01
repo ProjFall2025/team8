@@ -1,12 +1,10 @@
-<<<<<<< HEAD
 const db = require('../config/database');
 
 const leaseController = {
   // ✅ GET all leases with tenant info
-  // ✅ GET all leases with tenant info
-getAll: async (req, res) => {
-  try {
-    let query = `
+  getAll: async (req, res) => {
+    try {
+      let query = `
       SELECT 
         l.lease_id,
         l.start_date,
@@ -26,21 +24,21 @@ getAll: async (req, res) => {
       LEFT JOIN users u ON l.user_id = u.user_id
       LEFT JOIN properties p ON l.property_id = p.property_id
     `;
-    let values = [];
+      let values = [];
 
-    if (req.user.role === 'landlord') {
-      query += ' WHERE u.user_id = ?';
-      values.push(req.user.user_id);
+      if (req.user.role === 'landlord') {
+        query += ' WHERE u.user_id = ?';
+        values.push(req.user.user_id);
+      }
+
+      const [rows] = await db.query(query, values);
+      console.log('📦 Lease query result:', rows);
+      res.json(rows);
+    } catch (err) {
+      console.error('❌ Fetch leases error:', err);
+      res.status(500).json({ error: 'Internal server error' });
     }
-
-    const [rows] = await db.query(query, values);
-    console.log('📦 Lease query result:', rows);
-    res.json(rows);
-  } catch (err) {
-    console.error('❌ Fetch leases error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-},
+  },
 
   // ✅ GET lease by ID
   getById: async (req, res) => {
@@ -147,7 +145,7 @@ LIMIT 1
       }
 
       console.log("📤 Sending lease response:", rows[0]);
-res.status(200).json(rows[0]);
+      res.status(200).json(rows[0]);
     } catch (err) {
       console.error('❌ Lease fetch error:', err);
       res.status(500).json({ error: 'Server error' });
@@ -190,14 +188,6 @@ res.status(200).json(rows[0]);
       res.status(500).json({ error: 'Server error' });
     }
   }
-=======
-const leaseController = {
-  getAll: async (req, res) => { /* ... */ },
-  getById: async (req, res) => { /* ... */ },
-  create: async (req, res) => { /* ... */ },
-  update: async (req, res) => { /* ... */ },
-  delete: async (req, res) => { /* ... */ }
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
 };
 
 module.exports = leaseController;
