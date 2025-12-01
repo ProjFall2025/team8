@@ -1,7 +1,6 @@
 const LeasePhoto = require('../models/LeasePhoto');
 
 const leasePhotoController = {
-<<<<<<< HEAD
   // Get all photos (admin use)
   getAll: async (req, res) => {
     try {
@@ -139,42 +138,6 @@ const leasePhotoController = {
     } catch (error) {
       console.error('Delete photo error:', error);
       res.status(500).json({ error: 'Failed to delete lease photo' });
-=======
-  getAll: async (req, res) => {
-    try {
-      const photos = await LeasePhoto.findAll();
-      res.json(photos);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch lease photos' });
-    }
-  },
-
-  getByLease: async (req, res) => {
-    try {
-      const photos = await LeasePhoto.findByLease(req.params.leaseId);
-      res.json(photos);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch photos for lease' });
-    }
-  },
-
-  create: async (req, res) => {
-    try {
-      const newPhoto = await LeasePhoto.create(req.body);
-      res.status(201).json({ message: 'Lease photo uploaded', photo: newPhoto });
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to upload lease photo' });
-    }
-  },
-
-  delete: async (req, res) => {
-    try {
-      const deleted = await LeasePhoto.delete(req.params.photo_id);
-      if (!deleted) return res.status(404).json({ message: 'Lease photo not found' });
-      res.json({ message: 'Lease photo deleted' });
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to delete lease photo' });
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
     }
   }
 };
