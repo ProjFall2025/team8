@@ -1,40 +1,34 @@
 const db = require('../config/database');
 
 const Photo = {
-  findAll: () => {
-    return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM photos', (err, results) => {
-        if (err) return reject(err);
-        resolve(results);
-      });
-    });
+  // Get all photos
+  findAll: async () => {
+    const [results] = await db.query('SELECT * FROM photos');
+    return results;
   },
 
-  findByUser: (userId) => {
-    return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM photos WHERE user_id = ?', [userId], (err, results) => {
-        if (err) return reject(err);
-        resolve(results);
-      });
-    });
+  // Get photos by user
+  findByUser: async (userId) => {
+    const [results] = await db.query(
+      'SELECT * FROM photos WHERE user_id = ?',
+      [userId]
+    );
+    return results;
   },
 
-  create: (data) => {
-    return new Promise((resolve, reject) => {
-      db.query('INSERT INTO photos SET ?', data, (err, result) => {
-        if (err) return reject(err);
-        resolve({ photo_id: result.insertId, ...data });
-      });
-    });
+  // Create new photo
+  create: async (data) => {
+    const [result] = await db.query('INSERT INTO photos SET ?', data);
+    return { photo_id: result.insertId, ...data };
   },
 
-  delete: (photoId) => {
-    return new Promise((resolve, reject) => {
-      db.query('DELETE FROM photos WHERE photo_id = ?', [photoId], (err, result) => {
-        if (err) return reject(err);
-        resolve(result.affectedRows > 0);
-      });
-    });
+  // Delete photo
+  delete: async (photoId) => {
+    const [result] = await db.query(
+      'DELETE FROM photos WHERE photo_id = ?',
+      [photoId]
+    );
+    return result.affectedRows > 0;
   }
 };
 
