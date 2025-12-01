@@ -3,13 +3,13 @@ const router = express.Router();
 const propertyController = require('../controllers/propertyController');
 const auth = require('../middlewares/auth');
 
-<<<<<<< HEAD
 // Get properties by user (query param)
 router.get('/user', propertyController.getByUser);
 
 // ✅ Updated: Get properties owned by landlord (uses JWT user_id, no :id in URL)
 router.get('/landlord', auth, propertyController.getByLandlord);
 router.get('/landlord/all', auth, propertyController.getAllForLandlordDashboard);
+
 // Get all properties
 router.get('/', auth, propertyController.getAll);
 
@@ -23,12 +23,6 @@ router.get('/:id', auth, propertyController.getById);
 router.put('/:id', auth, propertyController.update);
 
 // Delete property by ID
-=======
-router.get('/', auth, propertyController.getAll);
-router.get('/:id', auth, propertyController.getById);
-router.post('/', auth, propertyController.create);
-router.put('/:id', auth, propertyController.update);
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
 router.delete('/:id', auth, propertyController.delete);
 
 module.exports = router;
