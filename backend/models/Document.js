@@ -1,7 +1,6 @@
 const db = require('../config/database');
 
 const Document = {
-<<<<<<< HEAD
   // Get all documents (mainly for admin/debug)
   getAll: async () => {
     const [rows] = await db.query('SELECT * FROM documents');
@@ -99,24 +98,6 @@ const Document = {
       [lease_id]
     );
     return rows[0] || null;
-=======
-  findByLease: (leaseId) => {
-    return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM documents WHERE lease_id = ?', [leaseId], (err, results) => {
-        if (err) return reject(err);
-        resolve(results);
-      });
-    });
-  },
-
-  create: (data) => {
-    return new Promise((resolve, reject) => {
-      db.query('INSERT INTO documents SET ?', data, (err, result) => {
-        if (err) return reject(err);
-        resolve(result.insertId);
-      });
-    });
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
   }
 };
 
