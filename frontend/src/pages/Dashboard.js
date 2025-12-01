@@ -1,17 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-<<<<<<< HEAD
-
-export default function Dashboard() {
-  const [user, setUser] = useState(null);
-  const [redirected, setRedirected] = useState(false);
-=======
 import Profile from '../components/Profile';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
+  const [redirected, setRedirected] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,7 +13,6 @@ export default function Dashboard() {
       .then(res => setUser(res.data))
       .catch(err => {
         console.error('Profile fetch failed:', err);
-<<<<<<< HEAD
         navigate('/login');
       });
   }, [navigate]);
@@ -28,15 +21,18 @@ export default function Dashboard() {
     if (user && !redirected) {
       const role = user.role?.toLowerCase();
       if (role === 'tenant') {
-        navigate('/tenant');
+        // Instead of redirect, show Profile
+        setRedirected(true);
       } else if (role === 'landlord') {
-        navigate('/landlord');
+        // Show Profile for landlord too
+        setRedirected(true);
       } else if (role === 'admin') {
         navigate('/admin-panel');
+        setRedirected(true);
       } else {
         navigate('/unauthorized');
+        setRedirected(true);
       }
-      setRedirected(true);
     }
   }, [user, redirected, navigate]);
 
@@ -50,6 +46,12 @@ export default function Dashboard() {
     );
   }
 
+  // Tenant/Landlord: show Profile
+  if (user.role?.toLowerCase() === 'tenant' || user.role?.toLowerCase() === 'landlord') {
+    return <Profile user={user} />;
+  }
+
+  // Admin fallback (though admin is redirected above)
   return (
     <div style={containerStyle}>
       <div style={card}>
@@ -131,29 +133,3 @@ const loadingText = {
   color: '#555',
   textAlign: 'center'
 };
-=======
-        setUser({ error: true });
-      });
-  }, []);
-
-  if (!user) return <p>Loading...</p>;
-  if (user.error) return <p>Unauthorized. Please log in.</p>;
-
-  return (
-    <div>
-      <h1>Welcome, {user.name}</h1>
-      <p>Role: {user.role}</p>
-
-      {user.role === 'admin' && (
-        <div style={{ marginTop: '1rem' }}>
-          <button onClick={() => navigate('/admin-panel')}>Go to Admin Panel</button>
-        </div>
-      )}
-
-      {(user.role === 'tenant' || user.role === 'landlord') && (
-        <Profile user={user} />
-      )}
-    </div>
-  );
-}
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
