@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../services/api';
@@ -90,59 +89,87 @@ const TenantDashboard = ({ onLogout }) => {
     }
   };
 
-  // Split cards into 3 rows manually
+  // Split cards into rows
   const row1 = [
-    { title: 'Tenant Profile', content: (
-      <>
-        <p><strong>Name:</strong> {user?.name}</p>
-        <p><strong>Email:</strong> {user?.email}</p>
-      </>
-    ), icon: '👤' },
-    { title: 'Lease Information', content: <TenantLeaseCard lease={lease} user={user} showTitle={false} />, icon: '📄' },
-    { title: 'Payment History', content: (
-      <>
-        <TenantPayments userId={user?.user_id} />
-        <button style={styles.button} onClick={handlePaymentClick}>Make a Payment</button>
-      </>
-    ), icon: '💳' }
+    {
+      title: 'Tenant Profile',
+      content: (
+        <>
+          <p><strong>Name:</strong> {user?.name}</p>
+          <p><strong>Email:</strong> {user?.email}</p>
+        </>
+      ),
+      icon: '👤'
+    },
+    {
+      title: 'Lease Information',
+      content: <TenantLeaseCard lease={lease} user={user} showTitle={false} />,
+      icon: '📄'
+    },
+    {
+      title: 'Payment History',
+      content: (
+        <>
+          <TenantPayments userId={user?.user_id} />
+          <button style={styles.button} onClick={handlePaymentClick}>Make a Payment</button>
+        </>
+      ),
+      icon: '💳'
+    }
   ];
 
   const row2 = [
-    lease ? { title: 'Lease Photos', content: <LeasePhotosForm leaseId={lease.lease_id} token={localStorage.getItem('token')} role={user?.role} showTitle={false} />, icon: '📷' } : null,
-    lease ? { title: 'Lease Documents', content: <DocumentsForm leaseId={lease.lease_id} userId={user?.user_id} role={user?.role} showTitle={false} />, icon: '📄' } : null,
-    { title: 'Reminders', content: (
-      <>
-        {reminders.length === 0 ? (
-          <p style={styles.listEmpty}>No reminders yet 🎉</p>
-        ) : (
-          <ul style={styles.list}>
-            {reminders.map((r) => (
-              <li key={r.reminder_id} style={styles.listItem}>
-                <strong>{r.type}:</strong> {r.message} — {new Date(r.remind_at).toLocaleDateString()}
-              </li>
-            ))}
-          </ul>
-        )}
-      </>
-    ), icon: '⏰' }
-  ].filter(Boolean); // remove nulls
+    lease ? {
+      title: 'Lease Photos',
+      content: <LeasePhotosForm leaseId={lease.lease_id} token={localStorage.getItem('token')} role={user?.role} showTitle={false} />,
+      icon: '📷'
+    } : null,
+    lease ? {
+      title: 'Lease Documents',
+      content: <DocumentsForm leaseId={lease.lease_id} userId={user?.user_id} role={user?.role} showTitle={false} />,
+      icon: '📄'
+    } : null,
+    {
+      title: 'Reminders',
+      content: (
+        <>
+          {reminders.length === 0 ? (
+            <p style={styles.listEmpty}>No reminders yet 🎉</p>
+          ) : (
+            <ul style={styles.list}>
+              {reminders.map((r) => (
+                <li key={r.reminder_id} style={styles.listItem}>
+                  <strong>{r.type}:</strong> {r.message} — {new Date(r.remind_at).toLocaleDateString()}
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      ),
+      icon: '⏰'
+    }
+  ].filter(Boolean);
 
   const row3 = [
-    lease ? { title: 'Smart Passcodes', content: (
-      <>
-        {passcodes.length === 0 ? (
-          <p style={styles.listEmpty}>No active passcodes</p>
-        ) : (
-          <ul style={styles.list}>
-            {passcodes.map((pc) => (
-              <li key={pc.passcode_id} style={styles.listItem}>
-                <strong>Code:</strong> {pc.passcode} — Expires: {new Date(pc.expires_at).toLocaleString()}
-              </li>
-            ))}
-          </ul>
-        )}
-      </>
-    ), icon: '🔐' } : null
+    lease ? {
+      title: 'Smart Passcodes',
+      content: (
+        <>
+          {passcodes.length === 0 ? (
+            <p style={styles.listEmpty}>No active passcodes</p>
+          ) : (
+            <ul style={styles.list}>
+              {passcodes.map((pc) => (
+                <li key={pc.passcode_id} style={styles.listItem}>
+                  <strong>Code:</strong> {pc.passcode} — Expires: {new Date(pc.expires_at).toLocaleString()}
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      ),
+      icon: '🔐'
+    } : null
   ].filter(Boolean);
 
   const renderRow = (cards) => (
@@ -181,42 +208,31 @@ const TenantDashboard = ({ onLogout }) => {
         </div>
 
         {/* SUMMARY BAR */}
-{lease && (
-  <div style={styles.row}>
-    {[
-      { icon: '💰', label: 'Next Rent Due', value: parseFloat(lease.rent_amount || '0') > 0 ? `$${parseFloat(lease.rent_amount).toFixed(2)}` : 'Not set' },
-      { icon: '📅', label: 'Lease Ends', value: lease.end_date ? new Date(lease.end_date).toLocaleDateString() : '—' },
-      { icon: '💳', label: 'Payments Made', value: lease.rent_amount && passcodes.length > 0 ? `$${(passcodes.length * parseFloat(lease.rent_amount)).toFixed(2)}` : '—' }
-    ].map((item) => (
-      <div key={item.label} style={styles.summaryItem}>
-        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{item.icon}</div>
-        <div style={styles.summaryLabel}>{item.label}</div>
-        <div style={styles.summaryValue}>{item.value}</div>
-      </div>
-    ))}
-  </div>
-)}
-
+        {lease && (
+          <div style={styles.row}>
+            {[
+              { icon: '💰', label: 'Next Rent Due', value: parseFloat(lease.rent_amount || '0') > 0 ? `$${parseFloat(lease.rent_amount).toFixed(2)}` : 'Not set' },
+              { icon: '📅', label: 'Lease Ends', value: lease.end_date ? new Date(lease.end_date).toLocaleDateString() : '—' },
+              { icon: '💳', label: 'Payments Made', value: lease.rent_amount && passcodes.length > 0 ? `$${(passcodes.length * parseFloat(lease.rent_amount)).toFixed(2)}` : '—' }
+            ].map((item) => (
+              <div key={item.label} style={styles.summaryItem}>
+                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{item.icon}</div>
+                <div style={styles.summaryLabel}>{item.label}</div>
+                <div style={styles.summaryValue}>{item.value}</div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* ROWS */}
         {renderRow(row1)}
         {renderRow(row2)}
         {renderRow(row3)}
       </div>
-=======
-import React from 'react';
-
-const TenantDashboard = () => {
-  return (
-    <div>
-      <h2>Welcome, Tenant!</h2>
-      <p>Your dashboard is ready.</p>
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
     </div>
   );
 };
 
-<<<<<<< HEAD
 const styles = {
   page: {
     background: 'linear-gradient(to bottom, #eef2f7, #f9fafb)',
@@ -294,6 +310,3 @@ summaryItem: {
 };
 
 export default TenantDashboard;
-=======
-export default TenantDashboard;
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
