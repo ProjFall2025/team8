@@ -9,28 +9,26 @@ const leaseTenantController = {
       res.status(500).json({ message: 'Failed to fetch lease tenants' });
     }
   },
-<<<<<<< HEAD
-getByLandlord: async (req, res) => {
-  try {
-    const landlordId = req.params.landlordId;
-    console.log('📡 Controller received landlordId:', landlordId);
 
-    const tenants = await LeaseTenant.findByLandlord(landlordId);
-    console.log('✅ Query result:', tenants);
+  getByLandlord: async (req, res) => {
+    try {
+      const landlordId = req.params.landlordId;
+      console.log('📡 Controller received landlordId:', landlordId);
 
-    if (!tenants || tenants.length === 0) {
-      return res.status(404).json({ message: 'No tenants found for this landlord' });
+      const tenants = await LeaseTenant.findByLandlord(landlordId);
+      console.log('✅ Query result:', tenants);
+
+      if (!tenants || tenants.length === 0) {
+        return res.status(404).json({ message: 'No tenants found for this landlord' });
+      }
+
+      res.status(200).json(tenants);
+    } catch (error) {
+      console.error('❌ Controller error in getByLandlord:', error);
+      res.status(500).json({ error: 'Failed to fetch tenants for landlord' });
     }
+  },
 
-    res.status(200).json(tenants);
-  } catch (error) {
-    console.error('❌ Controller error in getByLandlord:', error);
-    res.status(500).json({ error: 'Failed to fetch tenants for landlord' });
-  }
-},
-=======
-
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
   getByLease: async (req, res) => {
     try {
       const tenants = await LeaseTenant.findByLease(req.params.leaseId);
