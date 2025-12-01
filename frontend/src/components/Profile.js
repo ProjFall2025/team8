@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -134,26 +133,3 @@ const styles = {
   },
   empty: { color: '#6b7280', fontStyle: 'italic', marginBottom: '1rem' },
 };
-=======
-import { useNavigate } from 'react-router-dom';
-
-export default function Profile({ user }) {
-  const navigate = useNavigate();
-
-  return (
-    <div>
-      <h2>Tenant Profile</h2>
-      <p>Name: {user.name}</p>
-      <p>Email: {user.email}</p>
-      <p>Lease Info: (Coming soon)</p>
-      <p>Payment History: (Coming soon)</p>
-
-      {(user.role === 'tenant' || user.role === 'landlord') && (
-        <div style={{ marginTop: '1rem' }}>
-          <button onClick={() => navigate('/payments')}>Make a Payment</button>
-        </div>
-      )}
-    </div>
-  );
-}
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
