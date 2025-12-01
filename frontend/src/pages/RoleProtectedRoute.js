@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
@@ -43,6 +44,16 @@ export default function RoleProtectedRoute({ children, allowedRoles }) {
 
   if (!normalizedAllowed.includes(normalizedRole)) {
     return <Navigate to="/unauthorized" replace />;
+=======
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+
+export default function RoleProtectedRoute({ children, allowedRoles }) {
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  if (!user || !allowedRoles.includes(user.role)) {
+    return <Navigate to="/unauthorized" />;
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
   }
 
   return children;

@@ -1,6 +1,7 @@
 const db = require('../config/database');
 
 const TenantHistory = {
+<<<<<<< HEAD
   getAll: async () => {
     const [rows] = await db.query('SELECT * FROM tenanthistory');
     return rows;
@@ -34,6 +35,24 @@ const TenantHistory = {
   delete: async (id) => {
     const [result] = await db.query('DELETE FROM tenanthistory WHERE history_id = ?', [id]);
     return result.affectedRows;
+=======
+  findByUser: (userId) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM tenant_history WHERE user_id = ?', [userId], (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+  },
+
+  create: (data) => {
+    return new Promise((resolve, reject) => {
+      db.query('INSERT INTO tenant_history SET ?', data, (err, result) => {
+        if (err) return reject(err);
+        resolve({ history_id: result.insertId, ...data });
+      });
+    });
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
   }
 };
 

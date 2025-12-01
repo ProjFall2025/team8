@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from "react";
 import LoginForm from "../components/LoginForm";
 
@@ -70,3 +71,14 @@ const styles = {
 };
 
 export default Login;
+=======
+import LoginForm from '../components/LoginForm';
+
+export default function Login() {
+  return (
+    <div>
+      <LoginForm />
+    </div>
+  );
+}
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0

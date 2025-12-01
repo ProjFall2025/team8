@@ -1,6 +1,7 @@
 const TenantHistory = require('../models/TenantHistory');
 
 const tenantHistoryController = {
+<<<<<<< HEAD
   getAll: async (req, res) => {
     try {
       const rows = await TenantHistory.getAll();
@@ -29,12 +30,21 @@ const tenantHistoryController = {
     } catch (err) {
       console.error('Error fetching tenant history by lease:', err);
       res.status(500).json({ error: 'Failed to fetch tenant history' });
+=======
+  getByUser: async (req, res) => {
+    try {
+      const history = await TenantHistory.findByUser(req.params.user_id);
+      res.json(history);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch tenant history' });
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
     }
   },
 
   create: async (req, res) => {
     try {
       const newRecord = await TenantHistory.create(req.body);
+<<<<<<< HEAD
       res.status(201).json(newRecord);
     } catch (err) {
       console.error('Error creating tenant history:', err);
@@ -61,6 +71,11 @@ const tenantHistoryController = {
     } catch (err) {
       console.error('Error deleting tenant history:', err);
       res.status(500).json({ error: 'Failed to delete tenant history' });
+=======
+      res.status(201).json({ message: 'Tenant history recorded', record: newRecord });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to record tenant history' });
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
     }
   }
 };

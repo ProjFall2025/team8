@@ -5,6 +5,7 @@ const paymentController = require('../controllers/paymentController');
 const auth = require('../middlewares/auth');
 const role = require('../middlewares/role');
 
+<<<<<<< HEAD
 // 💳 Stripe session (tenants & landlords only)
 router.post('/create-session', auth, role('tenant', 'landlord'), paymentController.createStripeSession);
 
@@ -38,5 +39,14 @@ router.post('/test-session', (req, res) => {
   console.log('📥 /test-session hit');
   res.json({ ok: true });
 });
+=======
+router.post('/create-session', auth, role('tenant', 'landlord'), paymentController.createStripeSession);
+
+router.get('/', auth, role('Admin'), paymentController.getAll);
+
+router.get('/:id', auth, paymentController.getById);
+
+router.delete('/:id', auth, role('Admin'), paymentController.delete);
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
 
 module.exports = router;

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const db = require('../config/database');
 
 const leaseController = {
@@ -189,6 +190,14 @@ res.status(200).json(rows[0]);
       res.status(500).json({ error: 'Server error' });
     }
   }
+=======
+const leaseController = {
+  getAll: async (req, res) => { /* ... */ },
+  getById: async (req, res) => { /* ... */ },
+  create: async (req, res) => { /* ... */ },
+  update: async (req, res) => { /* ... */ },
+  delete: async (req, res) => { /* ... */ }
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
 };
 
 module.exports = leaseController;

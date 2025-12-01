@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const leasePhotoController = require('../controllers/leasePhotoController');
 const auth = require('../middlewares/auth');
+<<<<<<< HEAD
 const multer = require('multer');
 
 // Configure multer for file uploads
@@ -23,6 +24,12 @@ router.post('/', auth, leasePhotoController.create);
 router.patch('/visibility/:photo_id', auth, leasePhotoController.updateVisibility);
 
 // Delete photo
+=======
+
+router.get('/', auth, leasePhotoController.getAll);
+router.get('/:leaseId', auth, leasePhotoController.getByLease);
+router.post('/', auth, leasePhotoController.create);
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
 router.delete('/:photo_id', auth, leasePhotoController.delete);
 
 module.exports = router;

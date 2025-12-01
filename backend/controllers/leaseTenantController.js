@@ -9,6 +9,7 @@ const leaseTenantController = {
       res.status(500).json({ message: 'Failed to fetch lease tenants' });
     }
   },
+<<<<<<< HEAD
 getByLandlord: async (req, res) => {
   try {
     const landlordId = req.params.landlordId;
@@ -27,6 +28,9 @@ getByLandlord: async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch tenants for landlord' });
   }
 },
+=======
+
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
   getByLease: async (req, res) => {
     try {
       const tenants = await LeaseTenant.findByLease(req.params.leaseId);

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../services/api';
@@ -202,10 +203,20 @@ const TenantDashboard = ({ onLogout }) => {
         {renderRow(row2)}
         {renderRow(row3)}
       </div>
+=======
+import React from 'react';
+
+const TenantDashboard = () => {
+  return (
+    <div>
+      <h2>Welcome, Tenant!</h2>
+      <p>Your dashboard is ready.</p>
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
     </div>
   );
 };
 
+<<<<<<< HEAD
 const styles = {
   page: {
     background: 'linear-gradient(to bottom, #eef2f7, #f9fafb)',
@@ -283,3 +294,6 @@ summaryItem: {
 };
 
 export default TenantDashboard;
+=======
+export default TenantDashboard;
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0

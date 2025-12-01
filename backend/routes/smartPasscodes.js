@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+<<<<<<< HEAD
 
 const smartPasscodeController = require('../controllers/smartPasscodeController');
 const auth = require('../middlewares/auth');
@@ -62,3 +63,13 @@ router.patch('/:passcode_id/revoke', auth, smartPasscodeController.revoke);
 
 
 module.exports = router;
+=======
+const smartPasscodeController = require('../controllers/smartPasscodeController');
+const auth = require('../middlewares/auth');
+
+router.get('/:lease_id', auth, smartPasscodeController.getByLease);
+router.post('/', auth, smartPasscodeController.create);
+router.delete('/:passcode_id', auth, smartPasscodeController.delete);
+
+module.exports = router;
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0

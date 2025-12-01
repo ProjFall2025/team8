@@ -3,6 +3,7 @@ const router = express.Router();
 const maintenanceController = require('../controllers/maintenanceController');
 const auth = require('../middlewares/auth');
 
+<<<<<<< HEAD
 const authorize = (roles) => (req, res, next) => {
   const role = req.user.role?.toLowerCase();
   if (!roles.map(r => r.toLowerCase()).includes(role)) {
@@ -20,5 +21,12 @@ router.get('/:id', auth, authorize(['admin','landlord']), maintenanceController.
 router.post('/', auth, authorize(['tenant']), maintenanceController.create);
 router.patch('/:id', auth, authorize(['admin','landlord']), maintenanceController.update);
 router.delete('/:id', auth, authorize(['admin']), maintenanceController.delete);
+=======
+router.get('/', auth, maintenanceController.getAll);
+router.get('/:id', auth, maintenanceController.getById);
+router.post('/', auth, maintenanceController.create);
+router.put('/:id', auth, maintenanceController.update);
+router.delete('/:id', auth, maintenanceController.delete);
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
 
 module.exports = router;

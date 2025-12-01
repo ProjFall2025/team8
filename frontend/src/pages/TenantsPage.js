@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -369,3 +370,8 @@ const modalButtonRow = {
 };
 
 export default TenantsPage;
+=======
+export default function TenantsPage() {
+  return <h2>👥 Tenant List Coming Soon</h2>;
+}
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0

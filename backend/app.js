@@ -21,12 +21,20 @@ const smartPasscodesRoutes = require('./routes/smartPasscodes');
 const tenantHistoryRoutes = require('./routes/tenantHistory');
 const userIDsRoutes = require('./routes/userIDs');
 const userRemindersRoutes = require('./routes/userReminders');
+<<<<<<< HEAD
 const userRoutes = require('./routes/users');
 const path = require('path');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/leases', leasesRoutes);
 app.use('/api/leasearchive', leaseArchiveRoutes);
+=======
+const userRoutes = require('./routes/users'); // ✅ Added
+
+app.use('/api/auth', authRoutes);
+app.use('/api/leases', leasesRoutes);
+app.use('/api/lease-archive', leaseArchiveRoutes);
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
 app.use('/api/lease-photos', leasePhotosRoutes);
 app.use('/api/lease-tenants', leaseTenantsRoutes);
 app.use('/api/documents', documentsRoutes);
@@ -39,8 +47,13 @@ app.use('/api/smart-passcodes', smartPasscodesRoutes);
 app.use('/api/tenant-history', tenantHistoryRoutes);
 app.use('/api/user-ids', userIDsRoutes);
 app.use('/api/user-reminders', userRemindersRoutes);
+<<<<<<< HEAD
 app.use('/api/users', userRoutes);
 app.use('/files', express.static(path.join(__dirname, 'files')));
+=======
+app.use('/api/users', userRoutes); // ✅ Mounted
+
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });

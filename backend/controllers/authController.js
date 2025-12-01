@@ -1,21 +1,35 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+<<<<<<< HEAD
 const crypto = require('crypto');
+=======
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
 const User = require('../models/User');
 
 const authController = {
   register: async (req, res) => {
     try {
+<<<<<<< HEAD
       const { name, email, password } = req.body;
 
       // 🔒 Force every new user to be tenant
       const role = 'tenant';
 
       const existingUser = await User.findByEmail(email);
+=======
+      console.log('📥 Register request received:', req.body);
+
+      const { name, email, password, role } = req.body;
+
+      const existingUser = await User.findByEmail(email);
+      console.log('🔍 Existing user:', existingUser);
+
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
       if (existingUser) {
         return res.status(400).json({ message: 'User already exists' });
       }
 
+<<<<<<< HEAD
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await User.create({ name, email, password: hashedPassword, role });
 
@@ -23,6 +37,17 @@ const authController = {
       const token = jwt.sign(
         {
           user_id: user.user_id,
+=======
+      // ✅ Hash the password before saving
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const user = await User.create({ name, email, password: hashedPassword, role });
+      console.log('✅ New user created:', user);
+
+      const token = jwt.sign(
+        {
+          userId: user.user_id,
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
           email: user.email,
           role: user.role,
           name: user.name,
@@ -32,6 +57,7 @@ const authController = {
       );
 
       res.status(201).json({
+<<<<<<< HEAD
   message: 'User registered successfully',
   token,
   role: user.role,
@@ -43,6 +69,18 @@ const authController = {
   },
 });
 
+=======
+        message: 'User registered successfully',
+        token,
+        role: user.role,
+        user: {
+          id: user.user_id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
     } catch (error) {
       console.error('❌ Register error:', error);
       res.status(500).json({ message: 'Registration failed', error: error.message });
@@ -52,21 +90,36 @@ const authController = {
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
+<<<<<<< HEAD
 
       const user = await User.findByEmail(email);
+=======
+      const user = await User.findByEmail(email);
+
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
       if (!user) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
+<<<<<<< HEAD
+=======
+      // ✅ Compare hashed password
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res.status(401).json({ message: 'Login failed. Check your credentials.' });
       }
 
+<<<<<<< HEAD
       // ✅ Consistent payload
       const token = jwt.sign(
         {
           user_id: user.user_id,
+=======
+      const token = jwt.sign(
+        {
+          userId: user.user_id,
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
           email: user.email,
           role: user.role,
           name: user.name,
@@ -76,6 +129,7 @@ const authController = {
       );
 
       res.status(200).json({
+<<<<<<< HEAD
   message: 'Login successful',
   token,
   role: user.role,
@@ -89,11 +143,26 @@ const authController = {
 
     } catch (error) {
       console.error('❌ Login error:', error);
+=======
+        message: 'Login successful',
+        token,
+        role: user.role,
+        user: {
+          id: user.user_id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
       res.status(500).json({ message: 'Login failed', error: error.message });
     }
   },
 
   getProfile: async (req, res) => {
+<<<<<<< HEAD
   try {
     const user = await User.findById(req.user.user_id);
     if (!user) {
@@ -118,10 +187,15 @@ const authController = {
       const { email } = req.body;
 
       const user = await User.findByEmail(email);
+=======
+    try {
+      const user = await User.findById(req.user.userId);
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
 
+<<<<<<< HEAD
       const token = crypto.randomBytes(32).toString('hex');
       const expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
@@ -154,6 +228,17 @@ const authController = {
     } catch (error) {
       console.error('❌ Reset password error:', error);
       res.status(500).json({ message: 'Failed to reset password', error: error.message });
+=======
+      res.status(200).json({
+        id: user.user_id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      });
+    } catch (error) {
+      console.error('Profile error:', error);
+      res.status(500).json({ message: 'Failed to fetch profile', error: error.message });
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
     }
   },
 };

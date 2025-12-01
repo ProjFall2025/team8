@@ -1,6 +1,7 @@
 const db = require('../config/database');
 
 const SmartPasscode = {
+<<<<<<< HEAD
   async findByLease(leaseId) {
     const [rows] = await db.query(
       'SELECT * FROM smartpasscodes WHERE lease_id = ?',
@@ -69,6 +70,33 @@ const SmartPasscode = {
       [safeUserId, safeLeaseId]
     );
     return result.affectedRows > 0;
+=======
+  findByLease: (leaseId) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM smart_passcodes WHERE lease_id = ?', [leaseId], (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+  },
+
+  create: (data) => {
+    return new Promise((resolve, reject) => {
+      db.query('INSERT INTO smart_passcodes SET ?', data, (err, result) => {
+        if (err) return reject(err);
+        resolve({ passcode_id: result.insertId, ...data });
+      });
+    });
+  },
+
+  delete: (passcodeId) => {
+    return new Promise((resolve, reject) => {
+      db.query('DELETE FROM smart_passcodes WHERE passcode_id = ?', [passcodeId], (err, result) => {
+        if (err) return reject(err);
+        resolve(result.affectedRows > 0);
+      });
+    });
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
   }
 };
 

@@ -22,9 +22,16 @@ const User = {
 
   create: async ({ name, email, password, role }) => {
     try {
+<<<<<<< HEAD
       const [result] = await db.query(
         'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
         [name, email, password, role]
+=======
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const [result] = await db.query(
+        'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+        [name, email, hashedPassword, role]
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
       );
       return { user_id: result.insertId, name, email, role };
     } catch (err) {
@@ -34,6 +41,7 @@ const User = {
 
   comparePassword: (inputPassword, storedHash) => {
     return bcrypt.compare(inputPassword, storedHash);
+<<<<<<< HEAD
   },
 
   // ✅ NEW: Store reset token and expiry
@@ -83,6 +91,8 @@ const User = {
     } catch (err) {
       throw err;
     }
+=======
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
   }
 };
 

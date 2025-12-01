@@ -1,10 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+<<<<<<< HEAD
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [redirected, setRedirected] = useState(false);
+=======
+import Profile from '../components/Profile';
+
+export default function Dashboard() {
+  const [user, setUser] = useState(null);
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -12,6 +19,7 @@ export default function Dashboard() {
       .then(res => setUser(res.data))
       .catch(err => {
         console.error('Profile fetch failed:', err);
+<<<<<<< HEAD
         navigate('/login');
       });
   }, [navigate]);
@@ -123,3 +131,29 @@ const loadingText = {
   color: '#555',
   textAlign: 'center'
 };
+=======
+        setUser({ error: true });
+      });
+  }, []);
+
+  if (!user) return <p>Loading...</p>;
+  if (user.error) return <p>Unauthorized. Please log in.</p>;
+
+  return (
+    <div>
+      <h1>Welcome, {user.name}</h1>
+      <p>Role: {user.role}</p>
+
+      {user.role === 'admin' && (
+        <div style={{ marginTop: '1rem' }}>
+          <button onClick={() => navigate('/admin-panel')}>Go to Admin Panel</button>
+        </div>
+      )}
+
+      {(user.role === 'tenant' || user.role === 'landlord') && (
+        <Profile user={user} />
+      )}
+    </div>
+  );
+}
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0

@@ -4,6 +4,7 @@ const verifyToken = require('../middlewares/auth');
 const roleMiddleware = require('../middlewares/role');
 const db = require('../config/database');
 
+<<<<<<< HEAD
 // List users (admins see all, landlords see only their tenants)
 router.get('/', verifyToken, roleMiddleware('admin', 'landlord'), async (req, res) => {
   const { role } = req.query;
@@ -44,6 +45,18 @@ router.get('/:id', verifyToken, async (req, res) => {
 
 // Update user
 router.patch('/:id', verifyToken, roleMiddleware('admin', 'landlord'), async (req, res) => {
+=======
+const getUserById = (req, res) => {
+  const userId = req.params.id;
+  res.json({ message: `User ${userId} fetched` });
+};
+
+const deleteUser = (req, res) => {
+  res.json({ message: `User ${req.params.id} deleted` });
+};
+
+const updateUser = async (req, res) => {
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
   const userId = req.params.id;
   const fields = req.body;
 
@@ -61,20 +74,33 @@ router.patch('/:id', verifyToken, roleMiddleware('admin', 'landlord'), async (re
     return res.status(400).json({ error: 'No valid fields provided for update' });
   }
 
+<<<<<<< HEAD
   values.push(userId);
+=======
+  values.push(userId); // for WHERE clause
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
 
   const query = `UPDATE users SET ${updates.join(', ')} WHERE user_id = ?`;
 
   try {
     const [result] = await db.query(query, values);
+<<<<<<< HEAD
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
+=======
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
     res.json({ message: `User ${userId} updated successfully` });
   } catch (err) {
     console.error('Update error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
+<<<<<<< HEAD
 });
 
 // Delete user
@@ -110,5 +136,12 @@ router.delete('/:id', verifyToken, roleMiddleware('admin', 'landlord'), async (r
     res.status(500).json({ error: err.message || 'Internal server error' });
   }
 });
+=======
+};
+
+router.get('/:id', verifyToken, getUserById);
+router.patch('/:id', verifyToken, roleMiddleware('admin'), updateUser);
+router.delete('/:id', verifyToken, roleMiddleware('admin'), deleteUser);
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
 
 module.exports = router;

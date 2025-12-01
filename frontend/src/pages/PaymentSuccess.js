@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect } from 'react';
 import api from '../services/api';
 
@@ -28,3 +29,13 @@ const PaymentSuccess = () => {
 };
 
 export default PaymentSuccess;
+=======
+export default function PaymentSuccess() {
+  return (
+    <div>
+      <h2> Payment Successful!</h2>
+      <p>Thank you for your payment. Your transaction has been processed.</p>
+    </div>
+  );
+}
+>>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
