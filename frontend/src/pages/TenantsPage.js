@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -62,9 +61,9 @@ function TenantsPage() {
       setTenants((prev) => prev.filter((t) => t.id !== tenantId));
       alert(`✅ Tenant ${tenantId} removed successfully`);
     } catch (err) {
-  console.error('❌ Delete error:', err);
-  alert(err.response?.data?.error || 'Failed to delete tenant');
-}
+      console.error('❌ Delete error:', err);
+      alert(err.response?.data?.error || 'Failed to delete tenant');
+    }
   };
 
   const handleEditSubmit = async (e) => {
@@ -83,39 +82,39 @@ function TenantsPage() {
       alert('Failed to update tenant');
     }
   };
-    return (
+
+  return (
     <div style={pageStyle}>
       <div style={headerRow}>
-  <span style={iconStyle}>👥</span>
-  <h2 style={headingStyle}>Registered Tenants</h2>
-</div>
+        <span style={iconStyle}>👥</span>
+        <h2 style={headingStyle}>Registered Tenants</h2>
+      </div>
 
-<form
-  onSubmit={(e) => {
-    e.preventDefault();
-    const value = e.target.search.value.trim();
-    setSearchTerm(value);
-  }}
-  style={controlsStyle}
->
-  <input
-    type="text"
-    name="search"
-    placeholder="Search by ID or email..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    style={searchInput}
-  />
-  <button type="submit" style={viewButton}>Search</button>
-  <button
-    type="button"
-    style={deleteButton}
-    onClick={() => setSearchTerm('')}
-  >
-    Clear
-  </button>
-</form>
-
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const value = e.target.search.value.trim();
+          setSearchTerm(value);
+        }}
+        style={controlsStyle}
+      >
+        <input
+          type="text"
+          name="search"
+          placeholder="Search by ID or email..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={searchInput}
+        />
+        <button type="submit" style={viewButton}>Search</button>
+        <button
+          type="button"
+          style={deleteButton}
+          onClick={() => setSearchTerm('')}
+        >
+          Clear
+        </button>
+      </form>
 
       {filteredTenants.length === 0 ? (
         <p style={emptyStyle}>No tenants found.</p>
@@ -150,47 +149,49 @@ function TenantsPage() {
         </div>
       )}
 
+      {/* Edit Modal */}
       {editTenant && (
-  <div style={modalOverlay}>
-    <div style={modalContent}>
-      <h2 style={modalHeading}>Edit Tenant #{editTenant.id}</h2>
-      <form onSubmit={handleEditSubmit} style={formStyle}>
-        <div style={formGroup}>
-          <label style={labelStyle}>Email:</label>
-          <input
-            type="email"
-            value={editForm.email}
-            autoFocus
-            required
-            onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-            style={inputStyle}
-          />
+        <div style={modalOverlay}>
+          <div style={modalContent}>
+            <h2 style={modalHeading}>Edit Tenant #{editTenant.id}</h2>
+            <form onSubmit={handleEditSubmit} style={formStyle}>
+              <div style={formGroup}>
+                <label style={labelStyle}>Email:</label>
+                <input
+                  type="email"
+                  value={editForm.email}
+                  autoFocus
+                  required
+                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  style={inputStyle}
+                />
+              </div>
+              <div style={formGroup}>
+                <label style={labelStyle}>Phone:</label>
+                <input
+                  type="text"
+                  value={editForm.phone}
+                  onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                  style={inputStyle}
+                />
+              </div>
+              <div style={modalButtonRow}>
+                <button type="submit" style={editButton} disabled={!editForm.email.trim()}>
+                  Save
+                </button>
+                <button type="button" style={deleteButton} onClick={() => setEditTenant(null)}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div style={formGroup}>
-          <label style={labelStyle}>Phone:</label>
-          <input
-            type="text"
-            value={editForm.phone}
-            onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-            style={inputStyle}
-          />
-        </div>
-        <div style={modalButtonRow}>
-          <button type="submit" style={editButton} disabled={!editForm.email.trim()}>
-            Save
-          </button>
-          <button type="button" style={deleteButton} onClick={() => setEditTenant(null)}>
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
+      )}
     </div>
   );
 }
-  /* Styles */
+
+/* Styles */
 const pageStyle = {
   padding: '2rem',
   backgroundColor: '#f4f6f8',
@@ -321,6 +322,7 @@ const closeButton = {
   color: '#fff',
   cursor: 'pointer'
 };
+
 const modalHeading = {
   fontSize: '1.5rem',
   marginBottom: '1rem',
@@ -344,6 +346,7 @@ const labelStyle = {
   marginBottom: '0.5rem',
   color: '#444'
 };
+
 const headerRow = {
   display: 'flex',
   alignItems: 'center',
@@ -356,6 +359,7 @@ const iconStyle = {
   fontSize: '1.8rem',
   marginTop: '0.2rem'
 };
+
 const inputStyle = {
   padding: '0.5rem',
   borderRadius: '6px',
@@ -370,8 +374,3 @@ const modalButtonRow = {
 };
 
 export default TenantsPage;
-=======
-export default function TenantsPage() {
-  return <h2>👥 Tenant List Coming Soon</h2>;
-}
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
