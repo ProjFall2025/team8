@@ -1,7 +1,7 @@
 const db = require('../config/database');
 
 const SmartPasscode = {
-<<<<<<< HEAD
+  // Find passcodes by lease
   async findByLease(leaseId) {
     const [rows] = await db.query(
       'SELECT * FROM smartpasscodes WHERE lease_id = ?',
@@ -10,6 +10,7 @@ const SmartPasscode = {
     return rows;
   },
 
+  // Create new passcode with validation
   async create(data) {
     const leaseId = parseInt(data.lease_id, 10);
     const userId = parseInt(data.user_id, 10);
@@ -32,6 +33,7 @@ const SmartPasscode = {
     return { passcode_id: result.insertId, ...safeData };
   },
 
+  // Delete passcode by ID
   async delete(passcodeId) {
     const [result] = await db.query(
       'DELETE FROM smartpasscodes WHERE passcode_id = ?',
@@ -40,6 +42,7 @@ const SmartPasscode = {
     return result.affectedRows > 0;
   },
 
+  // Validate active passcode
   async validate(passcode) {
     const [rows] = await db.query(
       `SELECT * FROM smartpasscodes 
@@ -49,6 +52,7 @@ const SmartPasscode = {
     return rows[0] || null;
   },
 
+  // Revoke passcode by ID
   async revoke(passcodeId) {
     const [result] = await db.query(
       'UPDATE smartpasscodes SET is_active = 0 WHERE passcode_id = ?',
@@ -57,6 +61,7 @@ const SmartPasscode = {
     return result.affectedRows > 0;
   },
 
+  // Revoke passcodes by user and lease
   async revokeByUserLease(userId, leaseId) {
     const safeUserId = parseInt(userId, 10);
     const safeLeaseId = parseInt(leaseId, 10);
@@ -70,33 +75,6 @@ const SmartPasscode = {
       [safeUserId, safeLeaseId]
     );
     return result.affectedRows > 0;
-=======
-  findByLease: (leaseId) => {
-    return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM smart_passcodes WHERE lease_id = ?', [leaseId], (err, results) => {
-        if (err) return reject(err);
-        resolve(results);
-      });
-    });
-  },
-
-  create: (data) => {
-    return new Promise((resolve, reject) => {
-      db.query('INSERT INTO smart_passcodes SET ?', data, (err, result) => {
-        if (err) return reject(err);
-        resolve({ passcode_id: result.insertId, ...data });
-      });
-    });
-  },
-
-  delete: (passcodeId) => {
-    return new Promise((resolve, reject) => {
-      db.query('DELETE FROM smart_passcodes WHERE passcode_id = ?', [passcodeId], (err, result) => {
-        if (err) return reject(err);
-        resolve(result.affectedRows > 0);
-      });
-    });
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
   }
 };
 
