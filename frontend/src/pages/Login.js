@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React from "react";
 import LoginForm from "../components/LoginForm";
 
@@ -22,7 +21,7 @@ const styles = {
   page: {
     position: "relative",
     height: "100vh",
-    backgroundImage: "url('/smart-property.webp')", // make sure this file is in public/
+    backgroundImage: "url('/smart-property.webp')", // ensure this file is in public/
     backgroundSize: "cover",
     backgroundPosition: "center",
     display: "flex",
@@ -71,14 +70,3 @@ const styles = {
 };
 
 export default Login;
-=======
-import LoginForm from '../components/LoginForm';
-
-export default function Login() {
-  return (
-    <div>
-      <LoginForm />
-    </div>
-  );
-}
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
