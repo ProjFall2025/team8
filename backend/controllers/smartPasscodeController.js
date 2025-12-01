@@ -1,6 +1,5 @@
 const SmartPasscode = require('../models/SmartPasscode');
 
-<<<<<<< HEAD
 const generatePasscode = () =>
   Math.floor(1000 + Math.random() * 9000).toString();
 
@@ -17,48 +16,39 @@ const smartPasscodeController = {
       res.json(passcodes);
     } catch (error) {
       console.error('❌ getByLease error:', error);
-=======
-const smartPasscodeController = {
-  getByLease: async (req, res) => {
-    try {
-      const passcodes = await SmartPasscode.findByLease(req.params.lease_id);
-      res.json(passcodes);
-    } catch (error) {
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
       res.status(500).json({ message: 'Failed to fetch passcodes' });
     }
   },
 
-<<<<<<< HEAD
   // POST /api/passcodes
   create: async (req, res) => {
-  let { lease_id, user_id, passcode, expires_at } = req.body;
-  console.log('➡️ Incoming create request:', req.body);
+    let { lease_id, user_id, passcode, expires_at } = req.body;
+    console.log('➡️ Incoming create request:', req.body);
 
-  // If no passcode provided, fallback to random
-  if (!passcode) {
-    passcode = generatePasscode(); // optional fallback
-  }
+    // If no passcode provided, fallback to random
+    if (!passcode) {
+      passcode = generatePasscode(); // optional fallback
+    }
 
-  const expiresAt = expires_at
-    ? new Date(expires_at)
-    : new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const expiresAt = expires_at
+      ? new Date(expires_at)
+      : new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-  try {
-    const newCode = await SmartPasscode.create({
-      lease_id,
-      user_id,
-      passcode,   // <-- now uses manual if provided
-      expires_at: expiresAt,
-      is_active: true
-    });
+    try {
+      const newCode = await SmartPasscode.create({
+        lease_id,
+        user_id,
+        passcode,   // <-- now uses manual if provided
+        expires_at: expiresAt,
+        is_active: true
+      });
 
-    res.status(201).json({ message: 'Passcode created', passcode: newCode });
-  } catch (error) {
-    console.error('❌ create error:', error);
-    res.status(500).json({ message: 'Failed to create passcode' });
-  }
-},
+      res.status(201).json({ message: 'Passcode created', passcode: newCode });
+    } catch (error) {
+      console.error('❌ create error:', error);
+      res.status(500).json({ message: 'Failed to create passcode' });
+    }
+  },
 
   // DELETE /api/passcodes/:passcode_id
   delete: async (req, res) => {
@@ -164,26 +154,3 @@ const smartPasscodeController = {
 };
 
 module.exports = smartPasscodeController;
-=======
-  create: async (req, res) => {
-    try {
-      const newCode = await SmartPasscode.create(req.body);
-      res.status(201).json({ message: 'Passcode created', passcode: newCode });
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to create passcode' });
-    }
-  },
-
-  delete: async (req, res) => {
-    try {
-      const deleted = await SmartPasscode.delete(req.params.passcode_id);
-      if (!deleted) return res.status(404).json({ message: 'Passcode not found' });
-      res.json({ message: 'Passcode deleted' });
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to delete passcode' });
-    }
-  }
-};
-
-module.exports = smartPasscodeController;
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
