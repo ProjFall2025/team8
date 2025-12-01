@@ -1,19 +1,13 @@
 import axios from 'axios';
 
 const api = axios.create({
-<<<<<<< HEAD
-  baseURL: `${process.env.REACT_APP_BACKEND_URL}/api`,
-=======
-  baseURL: process.env.REACT_APP_BACKEND_URL,
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
+  baseURL: `${process.env.REACT_APP_BACKEND_URL}/api`, 
+  // 👆 If your backend doesn’t use /api, change this to just process.env.REACT_APP_BACKEND_URL
 });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-<<<<<<< HEAD
-  console.log('🔐 Token sent:', token);
-=======
->>>>>>> 1cff3b005ec95393bd523a7d6f77e9d0c64425d0
+  console.log('🔐 Token sent:', token); // optional, remove if you don’t want logs
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
