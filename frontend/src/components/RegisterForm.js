@@ -6,7 +6,6 @@ export default function RegisterForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("tenant");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -16,10 +15,10 @@ export default function RegisterForm() {
         name,
         email,
         password,
-        role,
+        // 🚫 no role field sent — backend enforces tenant
       });
       localStorage.setItem("token", res.data.token);
-      navigate("/"); // redirect to dashboard
+      navigate("/tenant"); // redirect straight to tenant dashboard
     } catch (err) {
       alert("Registration failed. Try again.");
     }
@@ -53,16 +52,6 @@ export default function RegisterForm() {
         required
         style={inputStyle}
       />
-
-      <select
-        value={role}
-        onChange={(e) => setRole(e.target.value)}
-        style={inputStyle}
-      >
-        <option value="tenant">Tenant</option>
-        <option value="landlord">Landlord</option>
-        <option value="admin">Admin</option>
-      </select>
 
       <button type="submit" style={buttonStyle}>
         Register
