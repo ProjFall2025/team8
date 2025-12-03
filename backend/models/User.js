@@ -6,8 +6,8 @@ const User = {
   findByEmail: async (email) => {
     try {
       const [results] = await db.query(
-        'SELECT * FROM users WHERE email = ?',
-        [email]
+        'SELECT user_id, name, email, role, password FROM users WHERE email = ?',
+       [email]
       );
       return results[0];
     } catch (err) {
