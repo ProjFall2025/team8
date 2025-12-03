@@ -13,7 +13,11 @@ export default function LoginForm() {
     setError('');
 
     try {
-      const res = await api.post('/auth/login', { email, password });
+      const payload = {
+        email: email.trim(), 
+        password: password, 
+      };
+      const res = await api.post('/auth/login', payload);
       const { token, user } = res.data;
 
       console.log("LOGIN RESPONSE:", res.data); // Debug
