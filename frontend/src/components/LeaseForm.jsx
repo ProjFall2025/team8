@@ -28,7 +28,7 @@ const LeaseForm = ({ onCreate, user }) => {
     }
 
     try {
-      const res = await axios.post('/api/leases', {
+      const res = await api.post('/leases', {
         ...formData,
         rent_amount: Number(formData.rent_amount),
         renewal_requested: Number(formData.renewal_requested) // ensure numeric tinyint
