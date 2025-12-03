@@ -104,8 +104,7 @@ const paymentController = {
       console.log('🔥 createStripeSession triggered');
       console.log('👤 req.user:', req.user);
 
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-
+const frontendUrl = process.env.FRONTEND_URL;
       const session = await stripe.checkout.sessions.create({
         mode: 'payment',
         line_items: [{

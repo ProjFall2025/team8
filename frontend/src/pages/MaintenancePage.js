@@ -3,8 +3,7 @@ import axios from 'axios';
 import MaintenanceForm from '../components/MaintenanceForm';
 import MaintenanceList from '../components/MaintenanceList';
 
-axios.defaults.baseURL = 'http://localhost:5000';
-
+axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL;
 const MaintenancePage = ({ user }) => {
   const [requests, setRequests] = useState([]);
   const [filter, setFilter] = useState('all');

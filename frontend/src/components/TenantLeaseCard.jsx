@@ -67,8 +67,7 @@ const TenantLeaseCard = ({ lease, user }) => {
         <span>
           {lease.lease_file_url ? (
 <a
-  href={`http://localhost:5000${lease.lease_file_url}`}
-  target="_blank"
+href={`${process.env.REACT_APP_BACKEND_URL}${lease.lease_file_url}`}  target="_blank"
   rel="noreferrer"
   style={fileLink}
 >

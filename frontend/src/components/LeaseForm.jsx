@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-
-axios.defaults.baseURL = 'http://localhost:5000';
-
+import api from './api';
+axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL + '/api';
 const LeaseForm = ({ onCreate, user }) => {
   const [formData, setFormData] = useState({
     property_id: '',

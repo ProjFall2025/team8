@@ -124,8 +124,7 @@ const authController = {
 
       await User.updateResetToken(user.user_id, token, expiry);
 
-      const resetLink = `http://localhost:3000/reset-password/${token}`;
-      console.log(`📧 Simulated reset link: ${resetLink}`);
+const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;      console.log(`📧 Simulated reset link: ${resetLink}`);
 
       res.status(200).json({ message: 'Reset link sent to your email (simulated)' });
     } catch (error) {

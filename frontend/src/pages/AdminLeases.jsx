@@ -3,8 +3,7 @@ import axios from 'axios';
 import LeaseForm from '../components/LeaseForm';
 import LeaseList from '../components/LeaseList';
 
-axios.defaults.baseURL = 'http://localhost:5000';
-
+axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL;
 const AdminLeases = ({ user }) => {
   const [leases, setLeases] = useState([]);
   const [loading, setLoading] = useState(true);
