@@ -29,18 +29,18 @@ const User = {
   },
 
   // Create new user with hashed password
-  create: async ({ name, email, password, role }) => {
-    try {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const [result] = await db.query(
-        'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-        [name, email, hashedPassword, role]
-      );
-      return { user_id: result.insertId, name, email, role };
-    } catch (err) {
-      throw err;
-    }
-  },
+  // User.create (models/User.js)
+create: async ({ name, email, password, role }) => {
+  try {
+    const [result] = await db.query(
+      'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+      [name, email, password, role] // already hashed in controller
+    );
+    return { user_id: result.insertId, name, email, role };
+  } catch (err) {
+    throw err;
+  }
+},
 
   // Compare input password with stored hash
   comparePassword: (inputPassword, storedHash) => {
