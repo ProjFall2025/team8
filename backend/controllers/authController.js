@@ -56,7 +56,11 @@ const authController = {
       if (!user) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
-
+console.log('--- LOGIN DEBUG ---');
+      console.log('Incoming Password:', password); 
+      console.log('Stored Hash (user.password):', user.password); // <-- Check this value
+      console.log('-------------------');
+      
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res.status(401).json({ message: 'Login failed. Check your credentials.' });
