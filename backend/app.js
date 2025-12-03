@@ -4,7 +4,23 @@ const app = express();
 require('dotenv').config();
 const path = require('path');
 
-app.use(cors());
+const allowedOrigins = [
+  'https://team8-frontend-live.onrender.com',
+  'http://localhost:3000'
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); 
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 app.use(express.json());
 
 const authRoutes = require('./routes/auth');
@@ -24,7 +40,6 @@ const userIDsRoutes = require('./routes/userIDs');
 const userRemindersRoutes = require('./routes/userReminders');
 const userRoutes = require('./routes/users');
 
-// ✅ Mounted routes
 app.use('/api/auth', authRoutes);
 app.use('/api/leases', leasesRoutes);
 app.use('/api/leasearchive', leaseArchiveRoutes);
@@ -42,15 +57,12 @@ app.use('/api/user-ids', userIDsRoutes);
 app.use('/api/user-reminders', userRemindersRoutes);
 app.use('/api/users', userRoutes);
 
-// ✅ Serve static files
 app.use('/files', express.static(path.join(__dirname, 'files')));
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Error handler
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
   res.status(500).json({ error: 'Internal server error' });
