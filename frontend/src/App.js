@@ -55,8 +55,14 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-cancel" element={<PaymentCancel />} />
-        <Route path="/payments" element={<PaymentPage />} />
-        <Route path="/landlord/properties" element={<LandlordProperties />} />
+<Route
+  path="/tenant/payments"
+  element={
+    <RoleProtectedRoute allowedRoles={['tenant']}>
+      <PaymentPage user={user} />
+    </RoleProtectedRoute>
+  }
+/>        <Route path="/landlord/properties" element={<LandlordProperties />} />
 <Route path="/properties-page" element={<PropertiesPage />} />
         {/* Role-based dashboard redirect */}
         <Route path="/dashboard" element={<DashboardRedirect />} />
