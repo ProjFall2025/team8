@@ -78,7 +78,7 @@ const Payments = {
       JOIN properties pr ON l.property_id = pr.property_id
       JOIN users u ON p.user_id = u.user_id
       WHERE pr.user_id = ?
-      GROUP BY l.lease_id, payment_month
+      GROUP BY pr.property_id, payment_month
       ORDER BY payment_month DESC
     `, [landlordId]);
 
