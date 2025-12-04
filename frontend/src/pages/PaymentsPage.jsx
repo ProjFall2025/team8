@@ -18,8 +18,7 @@ const PaymentsPage = ({ user }) => {
         }
 
         // ✅ Use /payments/all for admin, /payments/user otherwise
-const endpoint = user?.role === 'admin' ? '/paymenthistory' : '/paymenthistory/user';
-
+const endpoint = user?.role === 'admin' ? '/payments/all' : '/payments/user';
         const res = await api.get(endpoint, {
           headers: { Authorization: `Bearer ${token}` }
         });
