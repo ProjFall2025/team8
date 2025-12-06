@@ -63,22 +63,22 @@ const TenantLeaseCard = ({ lease, user }) => {
       </div>
 
       <div style={row}>
-        <span style={label}>Lease File:</span>
-        <span>
-          {lease.file_url ? (
-  <a
-    href={`${process.env.REACT_APP_BACKEND_URL}${lease.file_url}`}
-    target="_blank"
-    rel="noreferrer"
-    style={fileLink}
-  >
-    View File
-  </a>
+        <span style={label}>Lease File:</span>
+        <span>
+          {lease.lease_file_url ? ( // 👈 FIX: Use lease.lease_file_url
+  <a
+    href={`${process.env.REACT_APP_BACKEND_URL}${lease.lease_file_url}`}
+    target="_blank"
+    rel="noreferrer"
+    style={fileLink}
+  >
+    View File
+  </a>
 ) : (
-  <span style={value}>Not uploaded</span>
+  <span style={value}>Not uploaded</span>
 )}
-        </span>
-      </div>
+        </span>
+      </div>
     </div>
   );
 };
