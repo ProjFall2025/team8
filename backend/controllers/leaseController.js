@@ -120,19 +120,20 @@ const leaseController = {
     }
   },
 
-  // ✅ GET lease by user_id (remains the same)
+  // ✅ GET lease by user_id (FIXED INDENTATION)
   getLeaseByUser: async (req, res) => {
     const userId = req.params.user_id;
     console.log(`🔍 Fetching lease for user_id: ${userId}`);
 
     try {
       const query = `
-        SELECT lease_id, property_id, start_date, end_date,
-       lease_file_url, renewal_requested, renewal_date, rent_amount
+SELECT lease_id, property_id, start_date, end_date,
+lease_file_url, renewal_requested, renewal_date, rent_amount
 FROM leases
 WHERE user_id = ?
 LIMIT 1
-      `;
+      `.trim(); // <-- Left-aligned and using .trim()
+
       const [rows] = await db.query(query, [userId]);
       console.log('📦 Lease query result:', rows);
 
