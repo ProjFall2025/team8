@@ -111,7 +111,7 @@ const DocumentsForm = ({ leaseId, userId, role, showTitle = true }) => {  const 
             {visibleDocs.map(doc => (
               <li key={doc.document_id} style={styles.listItem}>
                 <a
-  href={`${process.env.REACT_APP_BACKEND_URL}/files/${doc.file_url.replace(/^files\//, '')}`}
+  href={`${process.env.REACT_APP_BACKEND_URL}${doc.file_url.startsWith('/') ? doc.file_url : '/' + doc.file_url}`}
   target="_blank"
   rel="noopener noreferrer"
   style={styles.docLink}

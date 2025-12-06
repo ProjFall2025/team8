@@ -98,8 +98,7 @@ const LeasePhotosForm = ({ leaseId, token, role, showTitle = true }) => {
           {photos
             .filter(p => role !== 'tenant' || p.is_visible_to_tenant)
             .map((p) => {
-              const photoUrl = `${backendUrl}/files/${p.url.replace(/^files\//, '')}`;
-              return (
+const photoUrl = `${backendUrl}${p.url.startsWith('/') ? p.url : '/' + p.url}`;              return (
                 <figure key={p.id} style={styles.photoWrapper}>
                   <img
                     src={photoUrl}
