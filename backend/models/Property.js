@@ -25,10 +25,9 @@ const Property = {
     return rows;
   },
 
-  // ✅ Get properties owned by landlord (Landlord Dashboard List)
+  // ✅ FIXED: Get properties owned by landlord (Landlord Dashboard List)
   getByLandlord: async (landlordId) => {
-    const [rows] = await db.query(
-      `
+    const query = `
       SELECT 
         p.property_id,
         p.address,
@@ -59,16 +58,16 @@ const Property = {
 
       FROM properties p
       WHERE p.user_id = ?
-      `,
-      [landlordId]
-    );
+      
+    `.trim(); // <-- .trim() added
+
+    const [rows] = await db.query(query, [landlordId]);
     return rows;
   },
 
-  // ✅ Dashboard view with ownership flag
+  // ✅ FIXED: Dashboard view with ownership flag
   getAllWithOwnershipFlag: async (landlordId) => {
-    const [rows] = await db.query(
-      `
+    const query = `
       SELECT 
         p.property_id,
         p.address,
@@ -101,9 +100,10 @@ const Property = {
            AND m.status != 'closed') AS open_requests
 
       FROM properties p
-      `,
-      [landlordId]
-    );
+      
+    `.trim(); // <-- .trim() added
+
+    const [rows] = await db.query(query, [landlordId]);
     return rows;
   },
 
