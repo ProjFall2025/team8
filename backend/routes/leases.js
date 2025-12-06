@@ -5,15 +5,24 @@ const auth = require('../middlewares/auth');
 const roleMiddleware = require('../middlewares/role');
 const upload = require('../middlewares/upload');
 
-// List all leases (admins see all, landlords see only their own)
 router.get(
-  '/',
-  auth,
-  roleMiddleware('admin', 'landlord'),
-  leaseController.getAll
+  '/',
+  auth,
+  roleMiddleware('admin'), 
+  leaseController.getAll
 );
 
-// Get leases by user_id (no role guard, scoped in controller)
+
+// routes/leases.js
+
+router.get(
+    '/landlord/:landlordId', 
+    auth, 
+    roleMiddleware('landlord'),
+    leaseController.getByLandlord 
+);
+
+
 router.get('/user/:user_id', auth, leaseController.getLeaseByUser);
 
 // Get lease by ID
