@@ -7,7 +7,7 @@ const leaseController = {
   getAll: async (req, res) => {
     try {
       // This now simply calls the model method for ALL leases. 
-      // Access should be restricted by the router middleware to 'admin' only.
+      // Access should be restricted by the router middleware to 'admin' only.
       const rows = await Lease.findAll(); 
       console.log('📦 Lease query result (Admin):', rows);
       res.json(rows);
@@ -16,8 +16,8 @@ const leaseController = {
       res.status(500).json({ error: 'Internal server error' });
     }
   },
-  
-  // 2. ✅ NEW SECURE FUNCTION FOR LANDLORD
+  
+  // 2. ✅ NEW SECURE FUNCTION FOR LANDLORD
   getByLandlord: async (req, res) => {
     const landlordId = req.params.landlordId; // ID from the URL
 
@@ -132,7 +132,7 @@ lease_file_url, renewal_requested, renewal_date, rent_amount
 FROM leases
 WHERE user_id = ?
 LIMIT 1
-      `.trim(); // <-- Left-aligned and using .trim()
+`.trim(); // <-- Left-aligned and using .trim()
 
       const [rows] = await db.query(query, [userId]);
       console.log('📦 Lease query result:', rows);
@@ -150,7 +150,7 @@ LIMIT 1
     }
   },
 
-  // ✅ Upload lease file and archive old one (remains the same)
+  // ✅ Upload lease file and archive old one (FIXED INDENTATION)
   uploadFile: async (req, res) => {
     const leaseId = req.params.id;
 
@@ -170,10 +170,11 @@ LIMIT 1
 
       // Archive old file if exists
       if (currentLease.lease_file_url) {
-        await db.query(
-          `INSERT INTO leasearchive 
-           (lease_id, user_id, lease_pdf_url, archived_at)
-           VALUES (?, ?, ?, NOW())`,
+        await db.query(`
+INSERT INTO leasearchive
+(lease_id, user_id, lease_pdf_url, archived_at)
+VALUES (?, ?, ?, NOW())
+`.trim(), // <-- FIX APPLIED HERE: Left-aligned and using .trim()
           [currentLease.lease_id, currentLease.user_id, currentLease.lease_file_url]
         );
       }
