@@ -2,62 +2,62 @@ const db = require('../config/database');
 
 const Lease = {
   // Get all leases (No change)
-  findAll: async () => {
+ findAll: async () => {
     try {
       const [results] = await db.query(`
 SELECT 
-  l.lease_id,
-  l.start_date,
-  l.end_date,
-  l.rent_amount,
-  l.renewal_requested,
-  l.lease_file_url,
-  u.user_id,
-  u.name AS tenant_name,
-  u.email AS tenant_email,
-  p.property_id,
-  p.address AS property_address,
-  p.city,
-  p.state,
-  p.zip,
-  p.status AS property_status
+l.lease_id,
+l.start_date,
+l.end_date,
+l.rent_amount,
+l.renewal_requested,
+l.lease_file_url,
+u.user_id,
+u.name AS tenant_name,
+u.email AS tenant_email,
+p.property_id,
+p.address AS property_address,
+p.city,
+p.state,
+p.zip,
+p.status AS property_status
 FROM leases l
 LEFT JOIN users u ON l.user_id = u.user_id
 LEFT JOIN properties p ON l.property_id = p.property_id
 ORDER BY l.start_date DESC
-      `.trim()); // .trim() is called immediately after the closing backtick
+      `.trim());
       return results;
     } catch (err) {
-      console.error('❌ Lease.findAll error:', err);
-      throw err;
+      console.error('❌ Lease.findAll error:', err); // <-- RE-ADDED
+      throw err; // <-- RE-ADDED
     }
   },
 
-  // 1. ✅ NEW METHOD: Get leases filtered by the Landlord's Property Ownership ID
+  // 1. ✅ NEW METHOD: Get leases filtered by the Landlord's Property Ownership ID (MOVED AND CORRECTED)
   findByLandlord: async (landlordId) => {
     try {
       const [results] = await db.query(`
-SELECT 
-  l.lease_id,
-  l.start_date,
-  l.end_date,
-  l.rent_amount,
-  l.renewal_requested,
-  l.lease_file_url,
-  u.user_id,
-  u.name AS tenant_name,
-  u.email AS tenant_email,
-  p.property_id,
-  p.address AS property_address,
-  p.city,
-  p.state,
-  p.zip
+SELECT
+l.lease_id,
+l.start_date,
+l.end_date,
+l.rent_amount,
+l.renewal_requested,
+l.lease_file_url,
+u.user_id,
+u.name AS tenant_name,
+u.email AS tenant_email,
+p.property_id,
+p.address AS property_address,
+p.city,
+p.state,
+p.zip
 FROM leases l
 LEFT JOIN users u ON l.user_id = u.user_id
 LEFT JOIN properties p ON l.property_id = p.property_id
-WHERE p.user_id = ?  -- 🛑 Crucial filter: Only leases on properties owned by this user
+WHERE p.user_id = ?
 ORDER BY l.start_date DESC
-      `.trim(), // .trim() is called here
+      `.trim(),
         [landlordId]
       );
       return results;
