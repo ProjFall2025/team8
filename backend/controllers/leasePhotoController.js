@@ -77,11 +77,10 @@ const leasePhotoController = {
 
     try {
       const newPhoto = await LeasePhoto.create({
-        lease_id: leaseId,
-        photo_url: `files/${file.filename}`,
-        uploaded_by: userId || null,
-        is_visible_to_tenant: 0
-      });
+  lease_id: leaseId,
+photo_url: `/files/${file.filename}`,  // ✅ add leading slash  uploaded_by: userId || null,
+  is_visible_to_tenant: 0
+});
 
       res.status(201).json({
         message: 'Lease photo uploaded',
