@@ -20,16 +20,15 @@ export default function LandlordProperties() {
       return;
     }
 
-    api.get('/properties/landlord/all', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    })
-      .then(res => setProperties(res.data))
-      .catch(err =>
-        console.error("❌ Error loading landlord properties:", err.response?.data || err.message)
-      )
-      .finally(() => setLoading(false));
-  }, [user, navigate]);
-
+    api.get('/properties/landlord', { // REMOVED '/all'
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+      .then(res => setProperties(res.data))
+      .catch(err =>
+        console.error("❌ Error loading landlord properties:", err.response?.data || err.message)
+      )
+      .finally(() => setLoading(false));
+  }, [user, navigate]);
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

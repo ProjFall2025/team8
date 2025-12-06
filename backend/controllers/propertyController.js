@@ -60,14 +60,20 @@ const propertyController = {
   },
 
   create: async (req, res) => {
-    try {
-      const newProperty = await Property.create(req.body);
-      res.status(201).json(newProperty);
-    } catch (err) {
-      console.error('Error creating property:', err);
-      res.status(500).json({ error: 'Failed to create property' });
-    }
-  },
+    try {
+        const LANDLORD_ID = 43;
+        const propertyData = {
+            ...req.body,
+            user_id: LANDLORD_ID
+        };
+
+        const newProperty = await Property.create(propertyData);
+        res.status(201).json(newProperty);
+     } catch (err) {
+        console.error('Error creating property:', err);
+        res.status(500).json({ error: 'Failed to create property' });
+     }
+  },
 
   update: async (req, res) => {
     try {

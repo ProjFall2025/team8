@@ -62,7 +62,14 @@ function App() {
       <PaymentPage user={user} />
     </RoleProtectedRoute>
   }
-/>        <Route path="/landlord/properties" element={<LandlordProperties />} />
+/>        <Route
+  path="/landlord/properties"
+  element={
+    <RoleProtectedRoute allowedRoles={['landlord']}>
+      <LandlordProperties user={user} />
+    </RoleProtectedRoute>
+  }
+/>
 <Route path="/properties-page" element={<PropertiesPage />} />
         {/* Role-based dashboard redirect */}
         <Route path="/dashboard" element={<DashboardRedirect />} />
@@ -146,14 +153,14 @@ function App() {
             </RoleProtectedRoute>
           }
         />
-        <Route
-          path="/properties"
-          element={
-            <RoleProtectedRoute allowedRoles={['admin', 'landlord']}>
-              <AdminProperties user={user} />
-            </RoleProtectedRoute>
-          }
-        />
+<Route
+  path="/properties"
+  element={
+    <RoleProtectedRoute allowedRoles={['admin']}>
+      <AdminProperties user={user} />
+    </RoleProtectedRoute>
+  }
+/>
         <Route
           path="/passcodes"
           element={
