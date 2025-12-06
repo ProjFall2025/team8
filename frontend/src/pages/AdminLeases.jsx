@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'; // 👈 Import useCallback
 import axios from 'axios';
 import LeaseForm from '../components/LeaseForm';
 import LeaseList from '../components/LeaseList';
@@ -11,30 +11,30 @@ const AdminLeases = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchLeases = async () => {
+  // 1. ✅ Wrap the async function with useCallback
+  const fetchLeases = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return alert('Missing auth token');
-      
-      // 🛑 FIX: Dynamically set the API endpoint based on user role
-      let apiEndpoint = '/api/leases';
-      if (user && user.role.toLowerCase() === 'landlord') {
-          // Landlords use the secure, filtered route
-          apiEndpoint = `/api/leases/landlord/${user.user_id}`;
-      }
-      
+      
+      let apiEndpoint = '/api/leases';
+      // NOTE: user is already a dependency of this function via the closure, 
+      // so it must be included in the useCallback dependency array below.
+      if (user && user.role.toLowerCase() === 'landlord') {
+          apiEndpoint = `/api/leases/landlord/${user.user_id}`;
+      }
+      
       const res = await axios.get(apiEndpoint, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setLeases(res.data);
     } catch (err) {
       console.error('❌ Fetch leases error:', err);
-      // Update error state with response error or generic message
       setError(err.response?.data?.error || 'Failed to load leases');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]); // 👈 Add 'user' as the dependency for useCallback
 
   const handleCreate = async () => {
     await fetchLeases();
@@ -72,13 +72,10 @@ const AdminLeases = ({ user }) => {
   };
 
   useEffect(() => {
-    // 💡 NOTE: The 'user' prop is needed here to determine the endpoint.
-    // If 'user' is null initially, this fetch will use the default (Admin) route.
-    // Ensure 'user' is passed correctly and is available on initial render.
     if (user) {
-        fetchLeases();
-    }
-  }, [user]); // Re-fetch when the user data becomes available
+        fetchLeases();
+    }
+  }, [user, fetchLeases]); // 👈 2. ✅ fetchLeases is now included and stable
 
   if (!user || !['admin', 'landlord'].includes(user.role.toLowerCase())) {
     return <p style={{ color: '#c00', textAlign: 'center', fontWeight: '600' }}>🚫 Unauthorized access</p>;
@@ -123,35 +120,35 @@ const AdminLeases = ({ user }) => {
 
 /* Styles */
 const pageStyle = {
-  padding: '2rem',
-  fontFamily: 'Segoe UI, sans-serif',
-  backgroundColor: '#f9fafb',
-  minHeight: '100vh'
+  padding: '2rem',
+  fontFamily: 'Segoe UI, sans-serif',
+  backgroundColor: '#f9fafb',
+  minHeight: '100vh'
 };
 
 const headerStyle = {
-  marginBottom: '1rem',
-  paddingBottom: '0.5rem',
-  borderBottom: '1px solid #ddd'
+  marginBottom: '1rem',
+  paddingBottom: '0.5rem',
+  borderBottom: '1px solid #ddd'
 };
 
 const summaryBar = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-  gap: '1rem',
-  backgroundColor: '#fff',
-  padding: '1rem',
-  borderRadius: '10px',
-  boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-  marginBottom: '2rem'
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+  gap: '1rem',
+  backgroundColor: '#fff',
+  padding: '1rem',
+  borderRadius: '10px',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+  marginBottom: '2rem'
 };
 
 const summaryItem = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  fontSize: '0.95rem',
-  color: '#333'
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  fontSize: '0.95rem',
+  color: '#333'
 };
 
 export default AdminLeases;

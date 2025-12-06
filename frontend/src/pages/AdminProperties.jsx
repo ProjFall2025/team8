@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'; // 👈 Import useCallback
 import axios from 'axios';
 import PropertyForm from '../components/PropertyForm';
 import PropertyList from '../components/PropertyList';
@@ -8,43 +8,42 @@ const AdminProperties = () => {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     
-    // 💡 Improvement: Fetch user/token/id once to handle component logic
+    // Fetch user/token/id once to handle component logic
     const user = JSON.parse(localStorage.getItem('user'));
     const token = localStorage.getItem('token');
     
-    // 1. 🛑 Relax the unauthorized guard
-    if (!user || !['admin', 'landlord'].includes(user.role.toLowerCase())) {
-        return <p style={unauthorizedStyle}>🚫 Unauthorized access</p>;
-    }
-    
     // Determine the correct API endpoint based on role
-    const isLandlord = user.role.toLowerCase() === 'landlord';
+    const isLandlord = user && user.role.toLowerCase() === 'landlord';
     // Admins use '/', Landlords use '/landlord' to get their specific properties
     const apiRoute = isLandlord ? '/api/properties/landlord' : '/api/properties';
 
-
-    useEffect(() => {
-        // Ensure user and token exist before fetching
+    // 1. ✅ Wrap fetchProperties with useCallback for stable function reference
+    const fetchProperties = useCallback(async () => {
         if (!token) {
              setLoading(false);
              return;
         }
 
-        async function fetchProperties() {
-            try {
-                // 2. ✅ Use the dynamic API route
-                const res = await axios.get(apiRoute, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                setProperties(res.data);
-            } catch (err) {
-                console.error('❌ Fetch error:', err);
-            } finally {
-                setLoading(false);
-            }
+        try {
+            // Use the dynamic API route
+            const res = await axios.get(apiRoute, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setProperties(res.data);
+        } catch (err) {
+            console.error('❌ Fetch error:', err);
+        } finally {
+            setLoading(false);
         }
-        fetchProperties();
-    }, [apiRoute, token]); // Dependencies: Refetch if the route or token changes
+    }, [apiRoute, token]); // fetchProperties only changes if apiRoute or token changes
+
+    // 2. ✅ Call useEffect unconditionally (before any early returns)
+    useEffect(() => {
+        // Ensure user is loaded before fetching, though token check inside fetchProperties handles most of this
+        if (user) {
+            fetchProperties();
+        }
+    }, [user, fetchProperties]); // 👈 Add fetchProperties and user as dependencies
 
     const handleCreate = (newProp) => {
         setProperties(prev => [newProp, ...prev]);
@@ -53,8 +52,6 @@ const AdminProperties = () => {
 
     const handleDelete = async (id) => {
         try {
-            // Note: The backend controller is responsible for ensuring Landlords 
-            // can only delete their own properties, but the API path is the same.
             await axios.delete(`/api/properties/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -71,6 +68,11 @@ const AdminProperties = () => {
         );
     };
 
+    // 3. ✅ Move conditional return AFTER all Hook calls
+    if (!user || !['admin', 'landlord'].includes(user.role.toLowerCase())) {
+        return <p style={unauthorizedStyle}>🚫 Unauthorized access</p>;
+    }
+    
     if (loading) {
         return <p style={loadingStyle}>Loading properties...</p>;
     }
