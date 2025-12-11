@@ -10,11 +10,13 @@ export default function AdminLeaseRequests() {
   const [filter, setFilter] = useState('all'); // filter tabs
 
   useEffect(() => {
-    api.get('/lease-requests')
-      .then(res => setRequests(res.data))
-      .catch(err => console.error('❌ Error loading lease requests:', err.response?.data?.message || err.message))
-      .finally(() => setLoading(false));
-  }, []);
+  setLoading(true);
+  api.get('/lease-requests/pending')
+    .then(res => setRequests(res.data))
+    .catch(err => console.error('❌ Error loading lease requests:', err.response?.data?.message || err.message))
+    .finally(() => setLoading(false));
+}, []);
+
 
   const handleUpdate = async (id, status) => {
     try {

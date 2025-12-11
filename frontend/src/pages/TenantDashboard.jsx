@@ -12,7 +12,10 @@ const TenantDashboard = ({ onLogout }) => {
   const [lease, setLease] = useState(null);
   const [reminders, setReminders] = useState([]);
   const [passcodes, setPasscodes] = useState([]);
-  const [leaseRequests, setLeaseRequests] = useState([]); // NEW STATE
+  const [leaseRequests, setLeaseRequests] = useState([]);
+  const [properties, setProperties] = useState([]);
+  const [profileLoaded, setProfileLoaded] = useState(false); // ✅ FIX: Prevent infinite loop
+  const [totalPaid, setTotalPaid] = useState(0); // ✅ FIX: Track real payments
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,15 +27,20 @@ const TenantDashboard = ({ onLogout }) => {
     navigate('/login');
   }, [navigate, onLogout]);
 
-  const handleRequestLease = async () => {
+  // ✅ FIX: Accept propertyId parameter
+  const handleRequestLease = async (propertyId) => {
     try {
-      const res = await api.post('/lease-requests', { user_id: user?.user_id });
-      alert(res.message || 'Lease request submitted!');
-      if (res.request) {
-        setLeaseRequests([...leaseRequests, res.request]); // update list
+      const res = await api.post('/lease-requests', { 
+        user_id: user?.user_id,
+        property_id: propertyId
+      });
+      alert(res.data?.message || 'Lease request submitted!');
+      if (res.data?.request) {
+        setLeaseRequests([...leaseRequests, res.data.request]);
       }
     } catch (err) {
       const msg = err.response?.data?.message;
+      alert('❌ Error: ' + (msg || 'Failed to submit lease request'));
       console.error('❌ Error requesting lease:', msg || err.message);
     }
   };
@@ -53,15 +61,18 @@ const TenantDashboard = ({ onLogout }) => {
         else console.error('❌ Error loading reminders:', msg || err.message);
       });
 
-    // NEW: load tenant’s lease requests
     api.get(`/lease-requests/user/${parsed.user_id}`)
       .then(res => setLeaseRequests(res.data))
       .catch(err => console.error('❌ Error loading lease requests:', err.response?.data?.message || err.message));
+    
+    api.get('/properties')
+      .then(res => setProperties(res.data.filter(p => p.status === 'available')))
+      .catch(err => console.error('❌ Error loading properties:', err));
   }, [navigate, handleLogout]);
-
-  // NEW EFFECT: Fetch the complete, current user profile details
+  
+  // ✅ FIX: Added profileLoaded flag to prevent infinite loop
   useEffect(() => {
-    if (!user?.user_id) return;
+    if (!user?.user_id || profileLoaded) return;
 
     const fetchUserProfile = async () => {
       try {
@@ -70,19 +81,23 @@ const TenantDashboard = ({ onLogout }) => {
           ...prevUser,
           ...res.data
         }));
+        setProfileLoaded(true);
       } catch (err) {
         const msg = err.response?.data?.message;
         console.error('❌ Error fetching user profile:', msg || err.message);
       }
     };
     fetchUserProfile();
-  }, [user?.user_id]);
+  }, [user?.user_id, profileLoaded]);
 
   useEffect(() => {
     if (!user?.user_id) return;
     const loadLease = async () => {
       try {
-        const res = await api.get(`/leases/user/${user.user_id}`);
+        const token = localStorage.getItem('token');
+        const res = await api.get(`/leases/user/${user.user_id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setLease(res.data.lease || res.data);
       } catch (err) {
         const msg = err.response?.data?.message;
@@ -105,18 +120,55 @@ const TenantDashboard = ({ onLogout }) => {
     }
   }, [lease, handleLogout]);
 
+  // ✅ FIX: Fetch actual payment total
+  useEffect(() => {
+    if (!user?.user_id) return;
+    
+    const fetchPayments = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await api.get('/payments/user', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const total = res.data.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+        setTotalPaid(total);
+      } catch (err) {
+        const msg = err.response?.data?.message;
+        if (msg === 'Token expired') handleLogout();
+        else console.error('❌ Error loading payments:', err);
+      }
+    };
+    
+    fetchPayments();
+  }, [user?.user_id, handleLogout]);
+
+  // ✅ FIX: Added user alerts for payment errors
   const handlePaymentClick = async () => {
     try {
-      const res = await api.post('/payments/create-session', {
-        amount: lease?.rent_amount || 1000,
-        lease_id: lease?.lease_id,
-        user_id: user?.user_id,
-      });
-      if (res.data?.url) window.location.href = res.data.url;
+      const token = localStorage.getItem('token');
+      const res = await api.post(
+        '/payments/create-session',
+        {
+          amount: lease?.rent_amount || 1000,
+          lease_id: lease?.lease_id,
+          user_id: user?.user_id,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      } else {
+        alert('❌ Unable to create payment session. Please try again.');
+      }
     } catch (err) {
       const msg = err.response?.data?.message;
-      if (msg === 'Token expired') handleLogout();
-      else console.error('❌ Payment error:', msg || err.message);
+      if (msg === 'Token expired') {
+        handleLogout();
+      } else {
+        alert('❌ Payment error: ' + (msg || 'Something went wrong'));
+        console.error('❌ Payment error:', msg || err.message);
+      }
     }
   };
 
@@ -141,8 +193,14 @@ const TenantDashboard = ({ onLogout }) => {
           {lease ? (
             <TenantLeaseCard lease={lease} user={user} showTitle={false} />
           ) : (
-            <button style={styles.button} onClick={handleRequestLease}>
-              Request New Lease
+            <button
+              style={styles.button}
+              onClick={() => {
+                const el = document.getElementById('available-properties');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              View Available Properties
             </button>
           )}
         </>
@@ -150,7 +208,47 @@ const TenantDashboard = ({ onLogout }) => {
       icon: '📄'
     },
     {
-      title: 'Lease Requests', // NEW CARD
+      title: 'Payment History',
+      content: (
+        <>
+          <TenantPayments userId={user?.user_id} />
+          <button style={styles.button} onClick={handlePaymentClick}>Make a Payment</button>
+        </>
+      ),
+      icon: '💳'
+    }
+  ];
+
+  const row2 = [
+    {
+      title: 'Available Properties',
+      content: (
+        <>
+          {properties.length === 0 ? (
+            <p style={styles.listEmpty}>No properties available</p>
+          ) : (
+            <ul style={styles.list}>
+              {properties.slice(0, 3).map(p => (
+                <li key={p.property_id} style={styles.listItem}>
+                  <div><strong>{p.address}</strong></div>
+                  <div>Rent: ${p.rent_amount}</div>
+                  <button 
+                    style={{...styles.button, marginTop: '0.5rem'}} 
+                    onClick={() => handleRequestLease(p.property_id)}
+                  >
+                    Request Lease
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      ),
+      icon: '🏠',
+      id: 'available-properties'
+    },
+    {
+      title: 'Lease Requests',
       content: (
         <>
           {leaseRequests.length === 0 ? (
@@ -168,24 +266,14 @@ const TenantDashboard = ({ onLogout }) => {
       ),
       icon: '📑'
     },
-    {
-      title: 'Payment History',
-      content: (
-        <>
-          <TenantPayments userId={user?.user_id} />
-          <button style={styles.button} onClick={handlePaymentClick}>Make a Payment</button>
-        </>
-      ),
-      icon: '💳'
-    }
-  ];
-
-  const row2 = [
     lease ? {
       title: 'Lease Photos',
       content: <LeasePhotosForm leaseId={lease.lease_id} token={localStorage.getItem('token')} role={user?.role} showTitle={false} />,
       icon: '📷'
-    } : null,
+    } : null
+  ].filter(Boolean);
+
+  const row3 = [
     lease ? {
       title: 'Lease Documents',
       content: <DocumentsForm leaseId={lease.lease_id} userId={user?.user_id} role={user?.role} showTitle={false} />,
@@ -209,10 +297,7 @@ const TenantDashboard = ({ onLogout }) => {
         </>
       ),
       icon: '⏰'
-    }
-  ].filter(Boolean);
-
-  const row3 = [
+    },
     lease ? {
       title: 'Smart Passcodes',
       content: (
@@ -231,10 +316,20 @@ const TenantDashboard = ({ onLogout }) => {
         </>
       ),
       icon: '🔐'
-    } : null,
+    } : null
+  ].filter(Boolean);
+
+  const row4 = [
     user ? {
       title: 'Maintenance Requests',
-      content: <MaintenanceForm user={user} leaseId={lease?.lease_id} />,
+      content: <MaintenanceForm 
+        user={user} 
+        leaseId={lease?.lease_id}
+        onCreate={(newRequest) => {
+          console.log('Maintenance request created:', newRequest);
+          alert('✅ Maintenance request submitted successfully!');
+        }}
+      />,
       icon: '🛠️'
     } : null
   ].filter(Boolean);
@@ -242,7 +337,7 @@ const TenantDashboard = ({ onLogout }) => {
   const renderRow = (cards) => (
     <div style={styles.row}>
       {cards.map((c) => (
-        <div key={c.title} style={styles.card}>
+        <div key={c.title} style={styles.card} id={c.id}>
           <div style={styles.cardIcon}>{c.icon}</div>
           <h3 style={styles.cardTitle}>{c.title}</h3>
           {c.content}
@@ -279,13 +374,13 @@ const TenantDashboard = ({ onLogout }) => {
           <div style={styles.roleBadge}>{user?.role}</div>
         </div>
 
-        {/* SUMMARY BAR */}
+        {/* SUMMARY BAR - ✅ FIX: Now uses totalPaid instead of passcodes */}
         {lease && (
           <div style={styles.row}>
             {[
               { icon: '💰', label: 'Next Rent Due', value: parseFloat(lease.rent_amount || '0') > 0 ? `$${parseFloat(lease.rent_amount).toFixed(2)}` : 'Not set' },
               { icon: '📅', label: 'Lease Ends', value: lease.end_date ? new Date(lease.end_date).toLocaleDateString() : '—' },
-              { icon: '💳', label: 'Payments Made', value: lease.rent_amount && passcodes.length > 0 ? `$${(passcodes.length * parseFloat(lease.rent_amount)).toFixed(2)}` : '—' }
+              { icon: '💳', label: 'Total Paid', value: `$${totalPaid.toFixed(2)}` }
             ].map((item) => (
               <div key={item.label} style={styles.summaryItem}>
                 <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{item.icon}</div>
@@ -300,6 +395,7 @@ const TenantDashboard = ({ onLogout }) => {
         {renderRow(row1)}
         {renderRow(row2)}
         {renderRow(row3)}
+        {renderRow(row4)}
       </div>
     </div>
   );
@@ -354,21 +450,20 @@ const styles = {
   welcomeBox: { display: 'flex', alignItems: 'center', gap: '1rem', margin: '2rem auto 1rem', maxWidth: '900px', paddingBottom: '0.5rem', borderBottom: '1px solid #e5e7eb' },
   welcomeText: { fontSize: '1.8rem', fontWeight: 700, color: '#1f2937' },
   roleBadge: { backgroundColor: '#2563eb', color: '#fff', padding: '0.4rem 0.75rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 500, boxShadow: '0 2px 6px rgba(0,0,0,0.1)', display: 'inline-block' },
-  summaryBar: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem', background: '#ffffff', padding: '1rem 1.5rem', margin: '1rem auto 2rem', borderRadius: '16px', boxShadow: '0 6px 18px rgba(0,0,0,0.1)', maxWidth: '900px', textAlign: 'center' },
-summaryItem: {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '1rem',
-  background: '#ffffff',
-  borderRadius: '12px',
-  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-  flex: '1 1 280px',
-  minHeight: '180px', // same height as cards
-  cursor: 'default'
-},
+  summaryItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '1rem',
+    background: '#ffffff',
+    borderRadius: '12px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+    flex: '1 1 280px',
+    minHeight: '180px',
+    cursor: 'default'
+  },
   summaryValue: { fontSize: '1.5rem', fontWeight: 700, color: '#1e3a8a', marginTop: '0.25rem' },
   summaryLabel: { fontSize: '0.95rem', fontWeight: 600, color: '#374151' },
   row: { display: 'flex', gap: '1.5rem', marginBottom: '1.5rem', flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: '1200px' },

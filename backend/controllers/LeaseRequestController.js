@@ -2,11 +2,23 @@ const LeaseRequest = require('../models/LeaseRequest');
 
 exports.createRequest = async (req, res) => {
   try {
-    const { user_id } = req.body;
-    const request = await LeaseRequest.create({ user_id });
-    res.json({ message: 'Lease request submitted successfully', request });
+    const { user_id, property_id } = req.body;
+
+    if (!user_id || !property_id) {
+      return res.status(400).json({ message: 'user_id and property_id are required' });
+    }
+
+    const request = await LeaseRequest.create({ user_id, property_id });
+
+    res.status(201).json({
+      message: 'Lease request submitted successfully',
+      request
+    });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating lease request', error: err.message });
+    res.status(500).json({
+      message: 'Error creating lease request',
+      error: err.message
+    });
   }
 };
 

@@ -1,14 +1,16 @@
 const db = require('../config/database');
 
 const LeaseRequest = {
-  create: async ({ user_id }) => {
+  create: async ({ user_id, property_id }) => {
     const [result] = await db.query(
-      'INSERT INTO lease_requests (user_id, status, requested_at) VALUES (?, ?, ?)',
-      [user_id, 'pending', new Date()]
+      'INSERT INTO lease_requests (user_id, property_id, status, requested_at) VALUES (?, ?, ?, ?)',
+      [user_id, property_id, 'pending', new Date()]
     );
+
     return {
       request_id: result.insertId,
       user_id,
+      property_id,
       status: 'pending',
       requested_at: new Date()
     };
@@ -16,7 +18,11 @@ const LeaseRequest = {
 
   findByUserId: async (user_id) => {
     const [results] = await db.query(
-      'SELECT request_id, user_id, status, requested_at FROM lease_requests WHERE user_id = ?',
+      `SELECT lr.request_id, lr.user_id, lr.property_id, lr.status, lr.requested_at,
+              p.address, p.rent_amount, p.status AS property_status
+       FROM lease_requests lr
+       JOIN properties p ON lr.property_id = p.property_id
+       WHERE lr.user_id = ?`,
       [user_id]
     );
     return results;
@@ -24,7 +30,11 @@ const LeaseRequest = {
 
   findPending: async () => {
     const [results] = await db.query(
-      'SELECT request_id, user_id, status, requested_at FROM lease_requests WHERE status = "pending"'
+      `SELECT lr.request_id, lr.user_id, lr.property_id, lr.status, lr.requested_at,
+              p.address, p.rent_amount, p.status AS property_status
+       FROM lease_requests lr
+       JOIN properties p ON lr.property_id = p.property_id
+       WHERE lr.status = "pending"`
     );
     return results;
   },
