@@ -26,6 +26,7 @@ export default function LandlordDashboard() {
   const [tenants, setTenants] = useState([]);
   const [payments, setPayments] = useState([]);
   const [maintenance, setMaintenance] = useState([]);
+  const [leaseRequests, setLeaseRequests] = useState([]); // NEW
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,13 +44,15 @@ export default function LandlordDashboard() {
       api.get('/properties/landlord', { headers: { Authorization: `Bearer ${token}` } }),
       api.get(`/lease-tenants/landlord-tenants/${landlordId}`, { headers: { Authorization: `Bearer ${token}` } }),
       api.get(`/payments/landlord/${landlordId}`, { headers: { Authorization: `Bearer ${token}` } }),
-      api.get(`/maintenance/landlord/${landlordId}`, { headers: { Authorization: `Bearer ${token}` } })
+      api.get(`/maintenance/landlord/${landlordId}`, { headers: { Authorization: `Bearer ${token}` } }),
+      api.get('/lease-requests', { headers: { Authorization: `Bearer ${token}` } }) // NEW
     ])
-      .then(([propsRes, tenantsRes, paymentsRes, maintRes]) => {
+      .then(([propsRes, tenantsRes, paymentsRes, maintRes, requestsRes]) => {
         setProperties(propsRes.data);
         setTenants(tenantsRes.data);
         setPayments(paymentsRes.data);
         setMaintenance(maintRes.data);
+        setLeaseRequests(requestsRes.data); // NEW
       })
       .catch(err =>
         console.error("❌ Error loading landlord dashboard:", err.response?.data || err.message)
@@ -85,6 +88,7 @@ export default function LandlordDashboard() {
           <button style={styles.navButton} onClick={() => navigate('/landlord/tenants')}>Tenants</button>
           <button style={styles.navButton} onClick={() => navigate('/landlord/payments')}>Payments</button>
           <button style={styles.navButton} onClick={() => navigate('/landlord/maintenance')}>Maintenance</button>
+          <button style={styles.navButton} onClick={() => navigate('/landlord/lease-requests')}>Lease Requests</button> {/* NEW NAV */}
           <button style={styles.logoutButton} onClick={handleLogout}>Logout</button>
         </div>
       </nav>
@@ -99,6 +103,7 @@ export default function LandlordDashboard() {
           <div style={styles.summaryItem}>👥 <strong>{tenants.length}</strong> Tenants</div>
           <div style={styles.summaryItem}>💳 <strong>${totalCollected.toFixed(2)}</strong> Collected</div>
           <div style={styles.summaryItem}>🛠️ <strong>{maintenance.length}</strong> Requests</div>
+          <div style={styles.summaryItem}>📑 <strong>{leaseRequests.length}</strong> Lease Requests</div> {/* NEW */}
         </div>
 
         <div style={styles.grid}>
@@ -149,12 +154,14 @@ export default function LandlordDashboard() {
             </button>
           </div>
 
+
+         
           {/* Payments */}
           <div style={styles.card}>
             <h3 style={styles.sectionTitle}>💳 Payments</h3>
             {loading ? <p>Loading payments...</p> : (
               <ul style={styles.list}>
-                {payments.slice(0, 3).map((pay, index) => {
+                {payments.slice(0, 3).map((pay) => {
                   const formatDate = (dateStr) => {
                     if (!dateStr) return 'N/A';
                     const parsed = Date.parse(dateStr);
@@ -220,12 +227,39 @@ export default function LandlordDashboard() {
               View All Requests
             </button>
           </div>
+
+          {/* Lease Requests */}
+          <div style={styles.card}>
+            <h3 style={styles.sectionTitle}>📑 Lease Requests</h3>
+            {loading ? <p>Loading requests...</p> : (
+              <ul style={styles.list}>
+                {leaseRequests.slice(0, 3).map(r => (
+                  <li key={r.request_id}>
+                    Tenant #{r.user_id} — {new Date(r.requested_at).toLocaleDateString()}
+                    <span style={{
+                      backgroundColor: r.status === 'approved' ? '#10b981' :
+                                       r.status === 'rejected' ? '#ef4444' : '#fbbf24',
+                      color: '#fff',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      fontSize: '0.8rem',
+                      marginLeft: '6px'
+                    }}>
+                      {r.status}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <button style={styles.viewAllButton} onClick={() => navigate('/landlord/lease-requests')}>
+              View All Lease Requests
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
 
 const styles = {
   page: {

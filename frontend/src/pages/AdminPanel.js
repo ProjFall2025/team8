@@ -23,7 +23,8 @@ export default function AdminPanel() {
     { title: 'Leases', icon: '📑', desc: 'Manage tenant leases and contracts.', path: '/leases' },
     { title: 'Maintenance', icon: '🛠️', desc: 'Review and assign maintenance requests.', path: '/maintenance' },
     { title: 'Passcodes', icon: '🔐', desc: 'Access and manage smart passcodes.', path: '/passcodes' },
-    { title: 'Payments', icon: '💳', desc: 'Track and manage tenant payments.', path: '/payments' }
+    { title: 'Payments', icon: '💳', desc: 'Track and manage tenant payments.', path: '/payments' },
+    { title: 'Lease Requests', icon: '📑', desc: 'View and manage all lease requests.', path: '/admin/lease-requests' } // NEW
   ];
 
   return (

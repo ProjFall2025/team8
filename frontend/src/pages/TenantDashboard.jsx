@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../services/api';
@@ -13,6 +12,7 @@ const TenantDashboard = ({ onLogout }) => {
   const [lease, setLease] = useState(null);
   const [reminders, setReminders] = useState([]);
   const [passcodes, setPasscodes] = useState([]);
+  const [leaseRequests, setLeaseRequests] = useState([]); // NEW STATE
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,6 +23,19 @@ const TenantDashboard = ({ onLogout }) => {
     if (onLogout) onLogout();
     navigate('/login');
   }, [navigate, onLogout]);
+
+  const handleRequestLease = async () => {
+    try {
+      const res = await api.post('/lease-requests', { user_id: user?.user_id });
+      alert(res.message || 'Lease request submitted!');
+      if (res.request) {
+        setLeaseRequests([...leaseRequests, res.request]); // update list
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message;
+      console.error('❌ Error requesting lease:', msg || err.message);
+    }
+  };
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -39,6 +52,11 @@ const TenantDashboard = ({ onLogout }) => {
         if (msg === 'Token expired') handleLogout();
         else console.error('❌ Error loading reminders:', msg || err.message);
       });
+
+    // NEW: load tenant’s lease requests
+    api.get(`/lease-requests/user/${parsed.user_id}`)
+      .then(res => setLeaseRequests(res.data))
+      .catch(err => console.error('❌ Error loading lease requests:', err.response?.data?.message || err.message));
   }, [navigate, handleLogout]);
 
   // NEW EFFECT: Fetch the complete, current user profile details
@@ -47,12 +65,10 @@ const TenantDashboard = ({ onLogout }) => {
 
     const fetchUserProfile = async () => {
       try {
-        // Assuming there is an endpoint to fetch a single user by ID
         const res = await api.get(`/users/${user.user_id}`);
-        // Update the user state with fresh data from the API
         setUser(prevUser => ({
           ...prevUser,
-          ...res.data // Overwrite existing details with fresh profile data
+          ...res.data
         }));
       } catch (err) {
         const msg = err.response?.data?.message;
@@ -60,16 +76,13 @@ const TenantDashboard = ({ onLogout }) => {
       }
     };
     fetchUserProfile();
-  }, [user?.user_id]); // Trigger when the basic user object (from localStorage) is loaded
+  }, [user?.user_id]);
 
   useEffect(() => {
     if (!user?.user_id) return;
     const loadLease = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await api.get(`/leases/user/${user.user_id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get(`/leases/user/${user.user_id}`);
         setLease(res.data.lease || res.data);
       } catch (err) {
         const msg = err.response?.data?.message;
@@ -94,16 +107,11 @@ const TenantDashboard = ({ onLogout }) => {
 
   const handlePaymentClick = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await api.post(
-        '/payments/create-session',
-        {
-          amount: lease?.rent_amount || 1000,
-          lease_id: lease?.lease_id,
-          user_id: user?.user_id,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await api.post('/payments/create-session', {
+        amount: lease?.rent_amount || 1000,
+        lease_id: lease?.lease_id,
+        user_id: user?.user_id,
+      });
       if (res.data?.url) window.location.href = res.data.url;
     } catch (err) {
       const msg = err.response?.data?.message;
@@ -120,7 +128,6 @@ const TenantDashboard = ({ onLogout }) => {
         <>
           <p><strong>Name:</strong> {user?.name}</p>
           <p><strong>Email:</strong> {user?.email}</p>
-          {/* The mobile number now reflects the current data fetched from the API */}
           <p><strong>Mobile:</strong> {user?.mobile_number || 'N/A'}</p>
           <p><strong>Role:</strong> {user?.role}</p>
         </>
@@ -129,8 +136,37 @@ const TenantDashboard = ({ onLogout }) => {
     },
     {
       title: 'Lease Information',
-      content: <TenantLeaseCard lease={lease} user={user} showTitle={false} />,
+      content: (
+        <>
+          {lease ? (
+            <TenantLeaseCard lease={lease} user={user} showTitle={false} />
+          ) : (
+            <button style={styles.button} onClick={handleRequestLease}>
+              Request New Lease
+            </button>
+          )}
+        </>
+      ),
       icon: '📄'
+    },
+    {
+      title: 'Lease Requests', // NEW CARD
+      content: (
+        <>
+          {leaseRequests.length === 0 ? (
+            <p style={styles.listEmpty}>No lease requests yet</p>
+          ) : (
+            <ul style={styles.list}>
+              {leaseRequests.map(r => (
+                <li key={r.request_id} style={styles.listItem}>
+                  #{r.request_id} — {r.status} — {new Date(r.requested_at).toLocaleString()}
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      ),
+      icon: '📑'
     },
     {
       title: 'Payment History',
@@ -177,32 +213,31 @@ const TenantDashboard = ({ onLogout }) => {
   ].filter(Boolean);
 
   const row3 = [
-  lease ? {
-    title: 'Smart Passcodes',
-    content: (
-      <>
-        {passcodes.length === 0 ? (
-          <p style={styles.listEmpty}>No active passcodes</p>
-        ) : (
-          <ul style={styles.list}>
-            {passcodes.map((pc) => (
-              <li key={pc.passcode_id} style={styles.listItem}>
-                <strong>Code:</strong> {pc.passcode} — Expires: {new Date(pc.expires_at).toLocaleString()}
-              </li>
-            ))}
-          </ul>
-        )}
-      </>
-    ),
-    icon: '🔐'
-  } : null,
-  user ? {
-    title: 'Maintenance Requests',
-    content: <MaintenanceForm user={user} leaseId={lease?.lease_id} />,
-    icon: '🛠️'
-  } : null
-].filter(Boolean);
-
+    lease ? {
+      title: 'Smart Passcodes',
+      content: (
+        <>
+          {passcodes.length === 0 ? (
+            <p style={styles.listEmpty}>No active passcodes</p>
+          ) : (
+            <ul style={styles.list}>
+              {passcodes.map((pc) => (
+                <li key={pc.passcode_id} style={styles.listItem}>
+                  <strong>Code:</strong> {pc.passcode} — Expires: {new Date(pc.expires_at).toLocaleString()}
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      ),
+      icon: '🔐'
+    } : null,
+    user ? {
+      title: 'Maintenance Requests',
+      content: <MaintenanceForm user={user} leaseId={lease?.lease_id} />,
+      icon: '🛠️'
+    } : null
+  ].filter(Boolean);
 
   const renderRow = (cards) => (
     <div style={styles.row}>
@@ -214,7 +249,6 @@ const TenantDashboard = ({ onLogout }) => {
         </div>
       ))}
       {cards.length < 3 && (
-        // Add invisible placeholders to maintain 3-column layout balance
         Array.from({ length: 3 - cards.length }).map((_, index) => (
           <div key={`placeholder-${index}`} style={{ flex: '1 1 280px', visibility: 'hidden' }}></div>
         ))

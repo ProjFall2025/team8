@@ -25,6 +25,8 @@ import TenantPasscodeValidator from './pages/TenantPasscodeValidator.jsx';
 import LandlordTenants from './pages/LandlordTenants';
 import LandlordPayments from './pages/LandlordPayments';
 import LandlordMaintenance from './pages/LandlordMaintenance';
+import AdminLeaseRequests from './pages/AdminLeaseRequests';
+import LandlordLeaseRequests from './pages/LandlordLeaseRequests';
 
 function App() {
   const user = JSON.parse(localStorage.getItem('user') || 'null');
@@ -187,6 +189,25 @@ function App() {
             </RoleProtectedRoute>
           }
         />
+        {/* Admin lease requests */}
+<Route
+  path="/admin/lease-requests"
+  element={
+    <RoleProtectedRoute allowedRoles={['admin']}>
+      <AdminLeaseRequests user={user} />
+    </RoleProtectedRoute>
+  }
+/>
+
+{/* Landlord lease requests */}
+<Route
+  path="/landlord/lease-requests"
+  element={
+    <RoleProtectedRoute allowedRoles={['landlord']}>
+      <LandlordLeaseRequests user={user} />
+    </RoleProtectedRoute>
+  }
+/>
         <Route
           path="/payments"
           element={

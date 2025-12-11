@@ -39,6 +39,7 @@ const tenantHistoryRoutes = require('./routes/tenantHistory');
 const userIDsRoutes = require('./routes/userIDs');
 const userRemindersRoutes = require('./routes/userReminders');
 const userRoutes = require('./routes/users');
+const leaseRequestRoutes = require('./routes/leaseRequests');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/leases', leasesRoutes);
@@ -56,7 +57,7 @@ app.use('/api/tenant-history', tenantHistoryRoutes);
 app.use('/api/user-ids', userIDsRoutes);
 app.use('/api/user-reminders', userRemindersRoutes);
 app.use('/api/users', userRoutes);
-
+app.use('/api/lease-requests', leaseRequestRoutes);
 app.use('/files', express.static(path.join(__dirname, 'files')));
 
 app.use((req, res) => {
