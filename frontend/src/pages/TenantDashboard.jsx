@@ -101,8 +101,14 @@ const TenantDashboard = ({ onLogout }) => {
         setLease(res.data.lease || res.data);
       } catch (err) {
         const msg = err.response?.data?.message;
-        if (msg === 'Token expired') handleLogout();
-        else console.error('❌ Error loading lease:', msg || err.message);
+        if (msg === 'Token expired') {
+          handleLogout();
+        } else if (err.response?.status === 404) {
+          // ✅ Tenant has no lease yet - this is normal, not an error
+          setLease(null);
+        } else {
+          console.error('❌ Error loading lease:', msg || err.message);
+        }
       }
     };
     loadLease();
