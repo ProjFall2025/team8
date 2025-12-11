@@ -45,7 +45,7 @@ export default function LandlordDashboard() {
       api.get(`/lease-tenants/landlord-tenants/${landlordId}`, { headers: { Authorization: `Bearer ${token}` } }),
       api.get(`/payments/landlord/${landlordId}`, { headers: { Authorization: `Bearer ${token}` } }),
       api.get(`/maintenance/landlord/${landlordId}`, { headers: { Authorization: `Bearer ${token}` } }),
-      api.get('/lease-requests', { headers: { Authorization: `Bearer ${token}` } }) // NEW
+api.get('/lease-requests/pending', { headers: { Authorization: `Bearer ${token}` } }) // ✅ NEW
     ])
       .then(([propsRes, tenantsRes, paymentsRes, maintRes, requestsRes]) => {
         setProperties(propsRes.data);

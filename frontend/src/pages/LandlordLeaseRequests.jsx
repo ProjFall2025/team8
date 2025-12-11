@@ -1,31 +1,31 @@
 // src/pages/LandlordLeaseRequests.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 export default function LandlordLeaseRequests() {
   const navigate = useNavigate();
+  const token = useMemo(() => localStorage.getItem('token'), []);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // NEW STATE for filter
+  const [filter, setFilter] = useState('all'); // Filter state
 
   useEffect(() => {
-    api.get('/lease-requests')
+    api.get('/lease-requests/pending', { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setRequests(res.data))
       .catch(err => console.error('❌ Error loading lease requests:', err.response?.data?.message || err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [token]);
 
   const handleUpdate = async (id, status) => {
     try {
-      await api.put(`/lease-requests/${id}`, { status });
+      await api.put(`/lease-requests/${id}`, { status }, { headers: { Authorization: `Bearer ${token}` } });
       setRequests(requests.map(r => r.request_id === id ? { ...r, status } : r));
     } catch (err) {
       console.error('❌ Error updating request:', err.response?.data?.message || err.message);
     }
   };
 
-  // Filtered list based on tab
   const filteredRequests = requests.filter(r => {
     if (filter === 'all') return true;
     return r.status === filter;
